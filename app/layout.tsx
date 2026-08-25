@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://hagukumu-plants-archive.komeume1121.chatgpt.site'),
   title: 'HAGUKUMU PLANTS｜植物の成長記録',
   description: '一株ごとの成長過程、親株の特徴、日々の栽培方法を管理番号とともに記録する植物アーカイブ。',
   openGraph: {
