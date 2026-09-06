@@ -89,7 +89,7 @@ export function ParentStockDetailImage({ image, lineageName, stockId }: ParentSt
       <div className="image-modal-content">
         <button type="button" className="image-modal-close" aria-label="画像表示を閉じる" onClick={closeImage}>×</button>
         <div className={`image-modal-stage${zoom > 1 ? ' is-zoomed' : ''}${isPanning ? ' is-panning' : ''}`} onWheel={(event) => { event.preventDefault(); changeZoom(event.deltaY < 0 ? .2 : -.2); }} onPointerDown={startPan} onPointerMove={movePan} onPointerUp={finishPan} onPointerCancel={finishPan} onDoubleClick={resetView}>
-          <img src={siteHref(image)} alt={`${stockId} 親株写真`} style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})` }} />
+          <img className="stock-detail-image-modal-image" src={siteHref(image)} alt={`${stockId} 親株写真`} style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})` }} />
         </div>
         <div className="stock-detail-image-modal-footer"><div className="image-modal-controls" aria-label="画像の表示倍率"><button type="button" aria-label="縮小" onClick={() => changeZoom(-.2)} disabled={zoom <= 1}>−</button><span>{Math.round(zoom * 100)}%</span><button type="button" aria-label="拡大" onClick={() => changeZoom(.2)} disabled={zoom >= 4}>＋</button><button type="button" className="image-modal-reset" onClick={resetView}>リセット</button></div></div>
       </div>
