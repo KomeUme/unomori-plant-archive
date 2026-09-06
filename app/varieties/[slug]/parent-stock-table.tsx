@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment, useMemo, useRef, useState, type PointerEvent } from 'react';
 import {
   getCurrentAttachedOffsetCount,
   getCurrentBreedingReadyPlantCount,
@@ -39,6 +39,16 @@ type ParentStockGroup = {
   stocks: ParentStock[];
 };
 
+type TablePointerState = {
+  pointerId: number | null;
+  startX: number;
+  scrollLeft: number;
+  startedAt: number;
+  moved: boolean;
+};
+
+const clickDurationLimit = 350;
+
 const sortOptions: Array<{ key: SortKey; label: string }> = [
   { key: 'id', label: '管理番号順' },
   { key: 'currentHeldPlantCount', label: '保有株数順' },
@@ -49,6 +59,10 @@ const sortOptions: Array<{ key: SortKey; label: string }> = [
 export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
   const [sortKey, setSortKey] = useState<SortKey>('id');
   const [direction, setDirection] = useState<SortDirection>('asc');
+  const [isDragging, setIsDragging] = useState(false);
+  const tableWrapRef = useRef<HTMLDivElement>(null);
+  const pointerStateRef = useRef<TablePointerState>({ pointerId: null, startX: 0, scrollLeft: 0, startedAt: 0, moved: false });
+  const suppressRowClickRef = useRef(false);
 
   const groupedStocks = useMemo(() => {
     const groupMap = new Map<string, ParentStockGroup>();
@@ -88,9 +102,48 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
   const buttonLabel = (key: SortKey, text: string) => `${text}${sortKey === key ? direction === 'asc' ? ' ↑' : ' ↓' : ''}`;
   const openDetail = (id: string) => { window.location.assign(siteHref(`/mothers/${id}`)); };
 
+  const startTableDrag = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return;
+    const tableWrap = tableWrapRef.current;
+    if (!tableWrap || tableWrap.scrollWidth <= tableWrap.clientWidth) return;
+
+    pointerStateRef.current = { pointerId: event.pointerId, startX: event.clientX, scrollLeft: tableWrap.scrollLeft, startedAt: Date.now(), moved: false };
+    tableWrap.setPointerCapture(event.pointerId);
+  };
+
+  const moveTableDrag = (event: PointerEvent<HTMLDivElement>) => {
+    const pointerState = pointerStateRef.current;
+    const tableWrap = tableWrapRef.current;
+    if (!tableWrap || pointerState.pointerId !== event.pointerId) return;
+
+    const distance = event.clientX - pointerState.startX;
+    if (Math.abs(distance) < 5) return;
+
+    if (!pointerState.moved) {
+      pointerState.moved = true;
+      setIsDragging(true);
+    }
+    tableWrap.scrollLeft = pointerState.scrollLeft - distance;
+    event.preventDefault();
+  };
+
+  const finishTableDrag = (event: PointerEvent<HTMLDivElement>) => {
+    const pointerState = pointerStateRef.current;
+    if (pointerState.pointerId !== event.pointerId) return;
+
+    const shouldSuppressClick = pointerState.moved || Date.now() - pointerState.startedAt >= clickDurationLimit;
+    if (shouldSuppressClick) {
+      suppressRowClickRef.current = true;
+      window.setTimeout(() => { suppressRowClickRef.current = false; }, 0);
+    }
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    pointerStateRef.current = { pointerId: null, startX: 0, scrollLeft: 0, startedAt: 0, moved: false };
+    setIsDragging(false);
+  };
+
   return <>
     <div className="sort-bar parent-stock-sort-bar" aria-label="親株一覧の並び替え"><p>表示順</p><div>{sortOptions.map(({ key, label }) => <button type="button" key={key} className={sortKey === key ? 'is-active' : ''} aria-pressed={sortKey === key} onClick={() => changeSort(key)}>{buttonLabel(key, label)}</button>)}</div></div>
-    <div className="pedigree-table-wrap">
+    <div ref={tableWrapRef} className={`pedigree-table-wrap${isDragging ? ' is-dragging' : ''}`} onPointerDown={startTableDrag} onPointerMove={moveTableDrag} onPointerUp={finishTableDrag} onPointerCancel={finishTableDrag} onDragStart={(event) => event.preventDefault()}>
       <table className="pedigree-table">
       <thead><tr>
         <th>親株ID</th>
@@ -106,7 +159,14 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
       </tr></thead>
       <tbody>{groupedStocks.map((group) => <Fragment key={`${group.primary}-${group.prefix}`}>
         {group.primary && group.prefix ? <tr className="management-group-row"><th colSpan={13} scope="rowgroup"><span>{group.primary}系</span><b>管理記号 {group.prefix}</b><em>{group.stocks.length}株</em></th></tr> : null}
-        {group.stocks.map((stock) => <tr key={stock.id} className="stock-table-row" role="link" tabIndex={0} aria-label={`${stock.id}の詳細を開く`} onClick={() => openDetail(stock.id)} onKeyDown={(event) => {
+        {group.stocks.map((stock) => <tr key={stock.id} className="stock-table-row" role="link" tabIndex={0} aria-label={`${stock.id}の詳細を開く`} onClick={(event) => {
+          if (suppressRowClickRef.current) {
+            event.preventDefault();
+            suppressRowClickRef.current = false;
+            return;
+          }
+          openDetail(stock.id);
+        }} onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openDetail(stock.id); }
         }}>
           <td><span className="stock-id-link">{stock.id}</span></td>

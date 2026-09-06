@@ -157,7 +157,7 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .pedigree-back-link:hover { border-color:var(--green); color:var(--green); }.pedigree-back-link:hover span { transform:translateX(-3px); }
 .pedigree-notice { display:grid; grid-template-columns:145px 1fr; gap:28px; margin:0 0 26px; padding:19px 23px; border-left:4px solid var(--lime); background:white; }
 .pedigree-notice span { color:var(--green); font-size:12px; font-weight:700; }.pedigree-notice p { margin:0; color:var(--muted); font-size:13px; line-height:1.8; }
-.pedigree-table-wrap { overflow:auto; border:1px solid var(--line); background:white; }
+.pedigree-table-wrap { overflow:auto; border:1px solid var(--line); background:white; touch-action:pan-y; }.pedigree-table-wrap.is-dragging,.pedigree-table-wrap.is-dragging * { cursor:grabbing!important; user-select:none; }
 .pedigree-table { width:100%; min-width:1730px; border-collapse:collapse; font-size:12px; }
 .pedigree-table th,.pedigree-table td { padding:14px 13px; border-right:1px solid #e3e7e3; border-bottom:1px solid #e3e7e3; vertical-align:top; text-align:left; white-space:nowrap; }
 .pedigree-table thead th { background:#183028; color:rgba(255,255,255,.86); font-size:11px; font-weight:700; letter-spacing:.03em; vertical-align:middle; }
