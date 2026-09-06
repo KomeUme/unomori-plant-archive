@@ -25,6 +25,6 @@ function VarietyRow({ variety }: { variety: Variety }) {
     <div className="variety-index-name"><p>{variety.type}</p><h3>{variety.name}</h3><span>{variety.botanicalName}</span></div>
     <p className="variety-index-description">{variety.description}</p>
     <dl className="variety-index-metrics"><div><dt>親株数</dt><dd>{stocks.length}</dd></div></dl>
-    <b aria-hidden="true">→</b>
+    <span className="variety-index-link-cue">親株一覧へ <b aria-hidden="true">→</b></span>
   </a>;
 }
