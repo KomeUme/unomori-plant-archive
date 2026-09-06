@@ -132,11 +132,14 @@ const blankAnnualHistory = (): AnnualCloneRecord[] => [
   { year: 2026, openingPlantCount: null, openingAttachedOffsetCount: null, openingBreedingReadyPlantCount: null, newOffsetCount: null, separatedOffsetCount: null, deaths: null, soldCount: null, closingPlantCount: null, closingAttachedOffsetCount: null, closingBreedingReadyPlantCount: null },
 ];
 
+const provisionalParentStockPhotoIds = new Set(['PD-07', 'PD-13']);
+
 const createSasanoyukiParentStock = (id: string): ParentStock => ({
   id,
   varietySlug: 'agave-victoriae-reginae',
   lineageName: '血統情報未登録',
   origin: '由来未登録',
+  ...(provisionalParentStockPhotoIds.has(id) ? { image: '/hero-unomori.jpg' } : {}),
   selectionReason: '特徴・選抜理由を記録予定です。',
   currentPots: null,
   notes: '親株IDを登録済み。鉢ごとの管理情報と年次履歴は記録待ちです。',

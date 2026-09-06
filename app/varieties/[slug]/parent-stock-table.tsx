@@ -49,12 +49,6 @@ type TablePointerState = {
   stockId: string | null;
 };
 
-type SelectedImage = {
-  id: string;
-  src: string;
-  alt: string;
-};
-
 type ImagePanState = {
   pointerId: number | null;
   startX: number;
@@ -77,7 +71,7 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
   const [sortKey, setSortKey] = useState<SortKey>('id');
   const [direction, setDirection] = useState<SortDirection>('asc');
   const [isDragging, setIsDragging] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<SelectedImage | null>(null);
+  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [imageZoom, setImageZoom] = useState(1);
   const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 });
   const [isImagePanning, setIsImagePanning] = useState(false);
@@ -85,21 +79,6 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
   const pointerStateRef = useRef<TablePointerState>({ pointerId: null, startX: 0, startY: 0, scrollLeft: 0, startedAt: 0, moved: false, stockId: null });
   const suppressRowClickRef = useRef(false);
   const imagePanRef = useRef<ImagePanState>({ pointerId: null, startX: 0, startY: 0, originX: 0, originY: 0 });
-
-  useEffect(() => {
-    if (!selectedImage) return;
-
-    const previousOverflow = document.body.style.overflow;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setSelectedImage(null);
-    };
-    document.body.style.overflow = 'hidden';
-    document.addEventListener('keydown', closeOnEscape);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.removeEventListener('keydown', closeOnEscape);
-    };
-  }, [selectedImage]);
 
   const groupedStocks = useMemo(() => {
     const groupMap = new Map<string, ParentStockGroup>();
@@ -128,6 +107,12 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
       .map((group) => ({ ...group, stocks: group.stocks.sort(orderStocks) }));
   }, [direction, sortKey, stocks]);
 
+  const imageStocks = useMemo(() => groupedStocks
+    .flatMap((group) => group.stocks)
+    .filter((stock): stock is ParentStock & { image: string } => Boolean(stock.image)), [groupedStocks]);
+  const selectedImageIndex = imageStocks.findIndex((stock) => stock.id === selectedImageId);
+  const selectedImage = selectedImageIndex >= 0 ? imageStocks[selectedImageIndex] : null;
+
   const changeSort = (key: SortKey) => {
     if (sortKey === key) setDirection((value) => value === 'asc' ? 'desc' : 'asc');
     else {
@@ -142,9 +127,15 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
     if (!stock.image) return;
     setImageZoom(1);
     setImageOffset({ x: 0, y: 0 });
-    setSelectedImage({ id: stock.id, src: siteHref(stock.image), alt: `${stock.id} 親株写真` });
+    setSelectedImageId(stock.id);
   };
-  const closeImage = () => setSelectedImage(null);
+  const closeImage = () => setSelectedImageId(null);
+  const showImageAt = (index: number) => {
+    const nextImage = imageStocks[index];
+    if (!nextImage) return;
+    resetImageView();
+    setSelectedImageId(nextImage.id);
+  };
   const changeImageZoom = (amount: number) => setImageZoom((zoom) => {
     const nextZoom = Math.min(4, Math.max(1, Number((zoom + amount).toFixed(2))));
     if (nextZoom === 1) setImageOffset({ x: 0, y: 0 });
@@ -154,6 +145,40 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
     setImageZoom(1);
     setImageOffset({ x: 0, y: 0 });
   };
+
+  useEffect(() => {
+    if (!selectedImage) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const closeOnKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') closeImage();
+      if (event.key === 'ArrowLeft') showImageAt(selectedImageIndex - 1);
+      if (event.key === 'ArrowRight') showImageAt(selectedImageIndex + 1);
+    };
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', closeOnKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', closeOnKey);
+    };
+  }, [selectedImage, selectedImageIndex, imageStocks]);
+
+  useEffect(() => {
+    if (!selectedImage) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const row = document.querySelector<HTMLTableRowElement>(`tr[data-stock-id="${selectedImage.id}"]`);
+      if (!row) return;
+      const rowBounds = row.getBoundingClientRect();
+      const rowCenter = rowBounds.top + rowBounds.height / 2;
+      const upperLimit = window.innerHeight * .22;
+      const lowerLimit = window.innerHeight * .78;
+      if (rowCenter < upperLimit || rowCenter > lowerLimit) {
+        window.scrollTo({ top: window.scrollY + rowCenter - window.innerHeight / 2, behavior: 'smooth' });
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [selectedImage?.id]);
 
   const startImagePan = (event: PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0 || imageZoom <= 1) return;
@@ -268,9 +293,10 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
     {selectedImage ? <div className="image-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="image-modal-title" onPointerDown={(event) => { if (event.target === event.currentTarget) closeImage(); }}>
       <div className="image-modal-content">
         <button type="button" className="image-modal-close" aria-label="画像表示を閉じる" onClick={closeImage}>×</button>
-        <div className="image-modal-heading"><span id="image-modal-title">{selectedImage.id} / 親株写真</span><p>ホイールで拡大・縮小、拡大後はドラッグで移動</p></div>
+        <div className="image-modal-heading"><span id="image-modal-title">{selectedImage.id} / 親株写真</span><p>{selectedImageIndex + 1} / {imageStocks.length}　ホイールで拡大・縮小、拡大後はドラッグで移動</p></div>
         <div className={`image-modal-stage${imageZoom > 1 ? ' is-zoomed' : ''}${isImagePanning ? ' is-panning' : ''}`} onWheel={(event) => { event.preventDefault(); changeImageZoom(event.deltaY < 0 ? .2 : -.2); }} onPointerDown={startImagePan} onPointerMove={moveImagePan} onPointerUp={finishImagePan} onPointerCancel={finishImagePan} onDoubleClick={resetImageView}>
-          <img src={selectedImage.src} alt={selectedImage.alt} style={{ transform: `translate(${imageOffset.x}px, ${imageOffset.y}px) scale(${imageZoom})` }} />
+          {imageStocks.length > 1 ? <><button type="button" className="image-modal-nav image-modal-nav-prev" aria-label="前の親株写真" onPointerDown={(event) => event.stopPropagation()} onClick={() => showImageAt(selectedImageIndex - 1)} disabled={selectedImageIndex === 0}>←</button><button type="button" className="image-modal-nav image-modal-nav-next" aria-label="次の親株写真" onPointerDown={(event) => event.stopPropagation()} onClick={() => showImageAt(selectedImageIndex + 1)} disabled={selectedImageIndex === imageStocks.length - 1}>→</button></> : null}
+          <img src={siteHref(selectedImage.image)} alt={`${selectedImage.id} 親株写真`} style={{ transform: `translate(${imageOffset.x}px, ${imageOffset.y}px) scale(${imageZoom})` }} />
         </div>
         <div className="image-modal-controls" aria-label="画像の表示倍率"><button type="button" aria-label="縮小" onClick={() => changeImageZoom(-.2)} disabled={imageZoom <= 1}>−</button><span>{Math.round(imageZoom * 100)}%</span><button type="button" aria-label="拡大" onClick={() => changeImageZoom(.2)} disabled={imageZoom >= 4}>＋</button><button type="button" className="image-modal-reset" onClick={resetImageView}>リセット</button></div>
       </div>
