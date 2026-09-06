@@ -14,6 +14,7 @@ import {
   type ParentStock,
 } from '../../data';
 import { siteHref } from '../../site-url';
+import { useImageZoom } from '../../use-image-zoom';
 
 type SortKey = 'id' | 'currentHeldPlantCount' | 'breedingReadyPlantCount' | 'offsetsPerBreedingPlant';
 type SortDirection = 'asc' | 'desc';
@@ -49,14 +50,6 @@ type TablePointerState = {
   stockId: string | null;
 };
 
-type ImagePanState = {
-  pointerId: number | null;
-  startX: number;
-  startY: number;
-  originX: number;
-  originY: number;
-};
-
 const clickDurationLimit = 500;
 const dragDistanceLimit = 8;
 
@@ -72,13 +65,21 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
   const [direction, setDirection] = useState<SortDirection>('asc');
   const [isDragging, setIsDragging] = useState(false);
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
-  const [imageZoom, setImageZoom] = useState(1);
-  const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 });
-  const [isImagePanning, setIsImagePanning] = useState(false);
+  const {
+    zoom: imageZoom,
+    offset: imageOffset,
+    isPanning: isImagePanning,
+    changeZoom: changeImageZoom,
+    reset: resetImageView,
+    onPointerDown: startImagePan,
+    onPointerMove: moveImagePan,
+    onPointerUp: finishImagePan,
+    onPointerCancel: cancelImagePan,
+    onWheel: zoomImageWithWheel,
+  } = useImageZoom();
   const tableWrapRef = useRef<HTMLDivElement>(null);
   const pointerStateRef = useRef<TablePointerState>({ pointerId: null, startX: 0, startY: 0, scrollLeft: 0, startedAt: 0, moved: false, stockId: null });
   const suppressRowClickRef = useRef(false);
-  const imagePanRef = useRef<ImagePanState>({ pointerId: null, startX: 0, startY: 0, originX: 0, originY: 0 });
 
   const groupedStocks = useMemo(() => {
     const groupMap = new Map<string, ParentStockGroup>();
@@ -125,8 +126,7 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
   const openDetail = (id: string) => { window.location.assign(siteHref(`/mothers/${id}`)); };
   const openImage = (stock: ParentStock) => {
     if (!stock.image) return;
-    setImageZoom(1);
-    setImageOffset({ x: 0, y: 0 });
+    resetImageView();
     setSelectedImageId(stock.id);
   };
   const closeImage = () => setSelectedImageId(null);
@@ -136,16 +136,6 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
     resetImageView();
     setSelectedImageId(nextImage.id);
   };
-  const changeImageZoom = (amount: number) => setImageZoom((zoom) => {
-    const nextZoom = Math.min(4, Math.max(1, Number((zoom + amount).toFixed(2))));
-    if (nextZoom === 1) setImageOffset({ x: 0, y: 0 });
-    return nextZoom;
-  });
-  const resetImageView = () => {
-    setImageZoom(1);
-    setImageOffset({ x: 0, y: 0 });
-  };
-
   useEffect(() => {
     if (!selectedImage) return;
 
@@ -180,37 +170,15 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
     return () => window.cancelAnimationFrame(frame);
   }, [selectedImage?.id]);
 
-  const startImagePan = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0 || imageZoom <= 1) return;
-    imagePanRef.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, originX: imageOffset.x, originY: imageOffset.y };
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setIsImagePanning(true);
-  };
-
-  const moveImagePan = (event: PointerEvent<HTMLDivElement>) => {
-    const panState = imagePanRef.current;
-    if (panState.pointerId !== event.pointerId) return;
-    setImageOffset({ x: panState.originX + event.clientX - panState.startX, y: panState.originY + event.clientY - panState.startY });
-    event.preventDefault();
-  };
-
-  const finishImagePan = (event: PointerEvent<HTMLDivElement>) => {
-    const panState = imagePanRef.current;
-    if (panState.pointerId !== event.pointerId) return;
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-    imagePanRef.current = { pointerId: null, startX: 0, startY: 0, originX: 0, originY: 0 };
-    setIsImagePanning(false);
-  };
-
   const startTableDrag = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0) return;
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
     const tableWrap = tableWrapRef.current;
     if (!tableWrap || tableWrap.scrollWidth <= tableWrap.clientWidth) return;
 
     suppressRowClickRef.current = false;
     const stockId = (event.target as HTMLElement).closest<HTMLTableRowElement>('[data-stock-id]')?.dataset.stockId ?? null;
     pointerStateRef.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, scrollLeft: tableWrap.scrollLeft, startedAt: Date.now(), moved: false, stockId };
-    tableWrap.setPointerCapture(event.pointerId);
+    if (event.pointerType !== 'touch') tableWrap.setPointerCapture(event.pointerId);
   };
 
   const moveTableDrag = (event: PointerEvent<HTMLDivElement>) => {
@@ -223,6 +191,10 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
     if (Math.max(Math.abs(horizontalDistance), Math.abs(verticalDistance)) < dragDistanceLimit) return;
 
     pointerState.moved = true;
+    if (event.pointerType === 'touch') {
+      if (Math.abs(horizontalDistance) >= Math.abs(verticalDistance)) setIsDragging(true);
+      return;
+    }
     if (Math.abs(horizontalDistance) >= Math.abs(verticalDistance)) {
       setIsDragging(true);
       tableWrap.scrollLeft = pointerState.scrollLeft - horizontalDistance;
@@ -234,7 +206,8 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
     const pointerState = pointerStateRef.current;
     if (pointerState.pointerId !== event.pointerId) return;
 
-    const isShortClick = !pointerState.moved && Date.now() - pointerState.startedAt < clickDurationLimit;
+    const isCancelled = event.type === 'pointercancel';
+    const isShortClick = !isCancelled && !pointerState.moved && Date.now() - pointerState.startedAt < clickDurationLimit;
     if (pointerState.stockId) {
       suppressRowClickRef.current = true;
       if (isShortClick) openDetail(pointerState.stockId);
@@ -246,7 +219,7 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
 
   return <>
     <div className="sort-bar parent-stock-sort-bar" aria-label="親株一覧の並び替え"><p>表示順</p><div>{sortOptions.map(({ key, label }) => <button type="button" key={key} className={sortKey === key ? 'is-active' : ''} aria-pressed={sortKey === key} onClick={() => changeSort(key)}>{buttonLabel(key, label)}</button>)}</div></div>
-    <div ref={tableWrapRef} className={`pedigree-table-wrap${isDragging ? ' is-dragging' : ''}`} onPointerDown={startTableDrag} onPointerMove={moveTableDrag} onPointerUp={finishTableDrag} onPointerCancel={finishTableDrag} onDragStart={(event) => event.preventDefault()}>
+    <div ref={tableWrapRef} className={`pedigree-table-wrap${isDragging ? ' is-dragging' : ''}`} role="region" aria-label="親株・血統一覧。横にスワイプして全項目を表示できます" onPointerDown={startTableDrag} onPointerMove={moveTableDrag} onPointerUp={finishTableDrag} onPointerCancel={finishTableDrag} onDragStart={(event) => event.preventDefault()}>
       <table className="pedigree-table">
       <thead><tr>
         <th>親株ID</th>
@@ -293,8 +266,8 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
     {selectedImage ? <div className="image-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="image-modal-title" onPointerDown={(event) => { if (event.target === event.currentTarget) closeImage(); }}>
       <div className="image-modal-content">
         <button type="button" className="image-modal-close" aria-label="画像表示を閉じる" onClick={closeImage}>×</button>
-        <div className="image-modal-heading"><span id="image-modal-title">{selectedImage.id} / 親株写真</span><p>{selectedImageIndex + 1} / {imageStocks.length}　ホイールで拡大・縮小、拡大後はドラッグで移動</p></div>
-        <div className={`image-modal-stage${imageZoom > 1 ? ' is-zoomed' : ''}${isImagePanning ? ' is-panning' : ''}`} onWheel={(event) => { event.preventDefault(); changeImageZoom(event.deltaY < 0 ? .2 : -.2); }} onPointerDown={startImagePan} onPointerMove={moveImagePan} onPointerUp={finishImagePan} onPointerCancel={finishImagePan} onDoubleClick={resetImageView}>
+        <div className="image-modal-heading"><span id="image-modal-title">{selectedImage.id} / 親株写真</span><p>{selectedImageIndex + 1} / {imageStocks.length}　ホイール・二本指で拡大縮小、拡大後はドラッグで移動</p></div>
+        <div className={`image-modal-stage${imageZoom > 1 ? ' is-zoomed' : ''}${isImagePanning ? ' is-panning' : ''}`} onWheel={zoomImageWithWheel} onPointerDown={startImagePan} onPointerMove={moveImagePan} onPointerUp={finishImagePan} onPointerCancel={cancelImagePan} onDoubleClick={resetImageView}>
           {imageStocks.length > 1 ? <><button type="button" className="image-modal-nav image-modal-nav-prev" aria-label="前の親株写真" onPointerDown={(event) => event.stopPropagation()} onClick={() => showImageAt(selectedImageIndex - 1)} disabled={selectedImageIndex === 0}>‹</button><button type="button" className="image-modal-nav image-modal-nav-next" aria-label="次の親株写真" onPointerDown={(event) => event.stopPropagation()} onClick={() => showImageAt(selectedImageIndex + 1)} disabled={selectedImageIndex === imageStocks.length - 1}>›</button></> : null}
           <img src={siteHref(selectedImage.image)} alt={`${selectedImage.id} 親株写真`} style={{ transform: `translate(${imageOffset.x}px, ${imageOffset.y}px) scale(${imageZoom})` }} />
         </div>

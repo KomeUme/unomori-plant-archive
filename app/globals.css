@@ -187,3 +187,32 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 @media (max-width:620px) {
   .image-modal-backdrop { padding:16px; }.image-modal-heading { margin-right:48px; }.image-modal-heading p { display:none; }.image-modal-stage { height:min(64vh,620px); }.image-modal-stage img { max-width:84vw; max-height:62vh; }.image-modal-nav { width:36px; height:36px; font-size:19px; }.image-modal-nav-prev { left:10px; }.image-modal-nav-next { right:10px; }.image-modal-footer { display:flex; justify-content:space-between; gap:12px; }.image-modal-controls { gap:7px; }.image-modal-controls button { width:34px; height:34px; font-size:20px; }.image-modal-controls .image-modal-reset { min-width:0; padding:0 10px; font-size:10px; }.image-modal-detail-link { gap:4px; font-size:10px; }.image-modal-detail-link b { font-size:14px; }
 }
+
+@media (max-width:900px) {
+  .pedigree-table-wrap,.pot-size-summary-wrap,.managed-pot-table-wrap,.annual-table-wrap { overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; touch-action:pan-x pan-y; }
+}
+
+@media (max-width:620px) {
+  .pedigree-table-wrap { scrollbar-width:thin; }
+  .current-ledger-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .current-ledger-grid > div { min-height:88px; padding:12px 11px; }
+  .current-ledger-grid p { min-height:32px; line-height:1.45; }
+  .current-ledger-grid b { margin-top:8px; font-size:24px; }
+  .current-ledger-note { margin-top:12px; }
+  .pot-size-summary,.pot-inventory { margin-top:26px; }
+  .pot-inventory-heading { margin-bottom:13px; }
+  .pot-size-summary-table { min-width:520px; }
+  .pot-size-summary-table th,.pot-size-summary-table td { padding:11px 12px; }
+  .pot-size-summary-table td { font-size:18px; }
+  .managed-pot-table { min-width:870px; }
+  .managed-pot-table th,.managed-pot-table td { padding:12px 13px; }
+  .managed-pot-table td:nth-child(2),.managed-pot-table td:nth-child(3),.managed-pot-table td:nth-child(5),.managed-pot-table td:nth-child(6) { font-size:18px; }
+  .annual-history-table { min-width:1000px; }
+  .annual-history-table th,.annual-history-table td { padding:12px 10px; }
+  .annual-history-table tbody th,.annual-history-table td { font-size:18px; }
+  .history-footnote { margin-top:13px; }
+}
+
+@media (max-width:360px) {
+  .current-ledger-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
