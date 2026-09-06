@@ -8,8 +8,9 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   return <header className="site-header">
     <a className="brand" href={siteHref('/')} aria-label="鵜ノ森 トップ"><span className="brand-mark">鵜</span><span>鵜ノ森 <em>PLANT ARCHIVE</em></span></a>
+    <LanguageToggle />
     <nav id="site-navigation" className={menuOpen ? 'is-open' : ''} aria-label="メインナビゲーション" onClick={() => setMenuOpen(false)}><a href={siteHref('/')} className="nav-top">TOP</a><a href={siteHref('/journal')}>記事一覧</a><a href={siteHref('/mother-plants')}>品種</a><a href={siteHref('/care-guide')}>栽培ガイド</a></nav>
-    <div className="header-actions"><LanguageToggle /><a className="header-shop" href={siteHref('/shop')} aria-label="オンラインストア" title="オンラインストア"><span className="shopping-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round"><path d="M5.4 8.1h13.2l-1.05 10.7H6.45L5.4 8.1Zm3.5-.05V6.65a3.1 3.1 0 0 1 6.2 0v1.4" /></svg></span></a><button className="mobile-menu-toggle" type="button" aria-label={menuOpen ? 'メニューを閉じる' : 'メニューを開く'} aria-controls="site-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen((isOpen) => !isOpen)}><span /><span /></button></div>
+    <div className="header-actions"><a className="header-shop" href={siteHref('/shop')} aria-label="オンラインストア" title="オンラインストア"><span className="shopping-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round"><path d="M5.4 8.1h13.2l-1.05 10.7H6.45L5.4 8.1Zm3.5-.05V6.65a3.1 3.1 0 0 1 6.2 0v1.4" /></svg></span></a><button className="mobile-menu-toggle" type="button" aria-label={menuOpen ? 'メニューを閉じる' : 'メニューを開く'} aria-controls="site-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen((isOpen) => !isOpen)}><span /><span /></button></div>
   </header>;
 }
 
