@@ -89,7 +89,7 @@ function PotSizeSummary({ stock }: { stock: ParentStock }) {
 function ManagedPotTable({ stock }: { stock: ParentStock }) {
   return <div className="pot-inventory">
     <div className="pot-inventory-heading"><div><p className="eyebrow">CURRENT POT INVENTORY</p><h3>現在の鉢・株群台帳</h3></div><p>各行を1鉢として管理します。未分離子株は、発生年ごとに残します。</p></div>
-    {stock.currentPots === null ? <p className="pot-inventory-empty">鉢ごとの記録は未登録です。</p> : <div className="managed-pot-table-wrap"><table className="managed-pot-table"><thead><tr><th>鉢ID</th><th>鉢サイズ</th><th>主株・独立株</th><th>未分離子株（発生年別）</th><th>鉢内株数</th><th>繁殖可能株</th><th>備考</th></tr></thead><tbody>{stock.currentPots.length ? stock.currentPots.map((pot) => <ManagedPotRow key={pot.id} pot={pot} />) : <tr><td colSpan={7}>現在管理している鉢はありません。</td></tr>}</tbody></table></div>}
+    {stock.currentPots === null ? <p className="pot-inventory-empty">鉢ごとの記録は未登録です。</p> : <div className="managed-pot-table-wrap"><table className="managed-pot-table"><thead><tr><th>鉢ID</th><th>鉢サイズ</th><th>未分離子株（発生年別）</th><th>鉢内株数</th><th>繁殖可能株</th><th>備考</th></tr></thead><tbody>{stock.currentPots.length ? stock.currentPots.map((pot) => <ManagedPotRow key={pot.id} pot={pot} />) : <tr><td colSpan={6}>現在管理している鉢はありません。</td></tr>}</tbody></table></div>}
   </div>;
 }
 
@@ -99,5 +99,5 @@ function ManagedPotRow({ pot }: { pot: ManagedPot }) {
   const attachedOffsetLabel = pot.attachedOffsets.length
     ? pot.attachedOffsets.slice().sort((a, b) => a.year - b.year).map((offset) => `${offset.year}年：${offset.count}株`).join(' / ')
     : '0株';
-  return <tr><th>{pot.id}</th><td>{pot.potSize}号</td><td>{displayNumber(pot.rootedPlantCount)}</td><td>{attachedOffsetLabel}</td><td>{displayNumber(heldPlantCount)}</td><td>{displayNumber(pot.breedingReadyPlantCount)}</td><td>{pot.notes || '—'}</td></tr>;
+  return <tr><th>{pot.id}</th><td>{pot.potSize}号</td><td>{attachedOffsetLabel}</td><td>{displayNumber(heldPlantCount)}</td><td>{displayNumber(pot.breedingReadyPlantCount)}</td><td>{pot.notes || '—'}</td></tr>;
 }
