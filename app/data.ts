@@ -1,3 +1,5 @@
+import { instagramArticles } from './instagram-articles';
+
 export type Plant = {
   id: string;
   name: string;
@@ -40,9 +42,195 @@ export const plants: Plant[] = [
   },
 ];
 
-export const mothers = [
-  { id: 'M-AG-003', name: 'Agave titanota “White Ice”', type: 'アガベ', feature: '白い鋸歯・厚葉・短葉傾向', origin: '国内選抜株', descendants: 12 },
-  { id: 'M-PL-008', name: 'Platycerium “Jade Girl”', type: 'ビカクシダ', feature: '細葉・多分岐・上向きの草姿', origin: '台湾由来', descendants: 8 },
-  { id: 'M-AN-002', name: 'Anthurium crystallinum', type: 'アンスリウム', feature: '濃緑ベルベット・銀白色の葉脈', origin: '実生選抜', descendants: 5 },
-  { id: 'M-AG-011', name: 'Agave “SAD”', type: 'アガベ', feature: '強いトップスパイン・コンパクト', origin: '国内選抜株', descendants: 4 },
+export type CloneSizeCounts = {
+  large: number | null;
+  medium: number | null;
+  small: number | null;
+};
+
+export type AnnualCloneRecord = {
+  year: number;
+  openingCloneCount: number | null;
+  newOffsetCount: number | null;
+  recoveredCount: number | null;
+  retainedOffsetCount: number | null;
+  deaths: number | null;
+  soldCount: number | null;
+  closingCloneCount: number | null;
+};
+
+export type ParentStock = {
+  id: string;
+  varietySlug: string;
+  lineageName: string;
+  origin: string;
+  image?: string;
+  selectionReason: string;
+  currentCloneTotal: number | null;
+  cloneSizes: CloneSizeCounts;
+  annualNewOffsetCount: number | null;
+  annualRecoveredCount: number | null;
+  yearEndRetainedOffsetCount: number | null;
+  annualDeaths: number | null;
+  annualSoldCount: number | null;
+  breedingReadyCount: number | null;
+  offsetsPerBreedingPlant: number | null;
+  notes: string;
+  annualHistory: AnnualCloneRecord[];
+};
+
+export type Variety = {
+  slug: string;
+  name: string;
+  botanicalName: string;
+  type: string;
+  description: string;
+  image?: string;
+};
+
+export const varieties: Variety[] = [
+  {
+    slug: 'agave-victoriae-reginae',
+    name: '笹の雪',
+    botanicalName: 'Agave victoriae-reginae',
+    type: 'アガベ',
+    description: '白い葉模様と株姿の違いを中心に、親株ごとの血統・クローン推移を記録します。',
+    image: '/hero-unomori.jpg',
+  },
+  {
+    slug: 'kaio-maru',
+    name: '海王丸',
+    botanicalName: '学名確認中',
+    type: 'サボテン',
+    description: '親株の由来と選抜理由、クローンの推移をこれから整理していきます。',
+  },
+  {
+    slug: 'oukan-ryu',
+    name: '王冠竜',
+    botanicalName: '学名確認中',
+    type: 'サボテン',
+    description: '親株の由来と選抜理由、クローンの推移をこれから整理していきます。',
+  },
 ];
+
+const blankAnnualHistory = (): AnnualCloneRecord[] => [
+  { year: 2024, openingCloneCount: null, newOffsetCount: null, recoveredCount: null, retainedOffsetCount: null, deaths: null, soldCount: null, closingCloneCount: null },
+  { year: 2025, openingCloneCount: null, newOffsetCount: null, recoveredCount: null, retainedOffsetCount: null, deaths: null, soldCount: null, closingCloneCount: null },
+  { year: 2026, openingCloneCount: null, newOffsetCount: null, recoveredCount: null, retainedOffsetCount: null, deaths: null, soldCount: null, closingCloneCount: null },
+];
+
+const createSasanoyukiParentStock = (id: string): ParentStock => ({
+  id,
+  varietySlug: 'agave-victoriae-reginae',
+  lineageName: '血統情報未登録',
+  origin: '由来未登録',
+  selectionReason: '特徴・選抜理由を記録予定です。',
+  currentCloneTotal: null,
+  cloneSizes: { large: null, medium: null, small: null },
+  annualNewOffsetCount: null,
+  annualRecoveredCount: null,
+  yearEndRetainedOffsetCount: null,
+  annualDeaths: null,
+  annualSoldCount: null,
+  breedingReadyCount: null,
+  offsetsPerBreedingPlant: null,
+  notes: '親株IDを登録済み。その他の管理情報は記録待ちです。',
+  annualHistory: blankAnnualHistory(),
+});
+
+const createSasanoyukiParentStockRange = (prefix: string, total: number) =>
+  Array.from({ length: total }, (_, index) => createSasanoyukiParentStock(`${prefix}-${String(index + 1).padStart(2, '0')}`));
+
+/**
+ * 管理番号は先頭の文字を大分類、続く文字を小分類として扱います。
+ * 例: P → PD / PL / PX。新規の親株は同じ規則でIDを追加するだけで、一覧にも自動で分類されます。
+ */
+export const parentStocks: ParentStock[] = [
+  ...createSasanoyukiParentStockRange('PD', 13),
+  ...createSasanoyukiParentStockRange('PL', 8),
+  ...createSasanoyukiParentStockRange('PX', 1),
+  {
+    id: 'UM-01',
+    varietySlug: 'agave-victoriae-reginae',
+    lineageName: '笹の雪 / 鵜ノ森管理株',
+    origin: '鵜ノ森管理株',
+    image: '/hero-unomori.jpg',
+    selectionReason: '白い葉模様・肉厚な葉姿。葉の重なりと輪郭の個性を記録対象としています。',
+    currentCloneTotal: null,
+    cloneSizes: { large: null, medium: null, small: null },
+    annualNewOffsetCount: null,
+    annualRecoveredCount: null,
+    yearEndRetainedOffsetCount: null,
+    annualDeaths: null,
+    annualSoldCount: null,
+    breedingReadyCount: null,
+    offsetsPerBreedingPlant: null,
+    notes: '初回の数値入力待ち。小さな子株は、発生年と回収年を分けて年次履歴へ記録します。',
+    annualHistory: blankAnnualHistory(),
+  },
+  createSasanoyukiParentStock('X-01'),
+];
+
+export type ManagementNumberGroup = {
+  primary: string;
+  prefix: string;
+};
+
+export function getManagementNumberGroup(id: string): ManagementNumberGroup {
+  const [prefix = id] = id.split('-');
+  return { primary: prefix.slice(0, 1), prefix };
+}
+
+export function getVarietyBySlug(slug: string) {
+  return varieties.find((variety) => variety.slug === slug);
+}
+
+export function getParentStocksByVariety(slug: string) {
+  return parentStocks.filter((stock) => stock.varietySlug === slug);
+}
+
+export function getParentStockById(id: string) {
+  return parentStocks.find((stock) => stock.id === id);
+}
+
+export type Article = {
+  slug: string;
+  category: string;
+  date: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  body: string;
+  sourceUrl?: string;
+  categories?: readonly string[];
+  tags?: readonly string[];
+  managementNumbers?: readonly string[];
+  popularity?: number;
+};
+
+const siteArticles: Article[] = [
+  {
+    slug: 'summer-care-2026', category: '育成方法', categories: ['育成方法'], tags: ['夏季管理'], date: '2026.08.22', title: '夏の終わり、株元の風を見直す',
+    excerpt: '気温が高い時期こそ、灌水量だけではなく風の通り道を整えることが大切です。今月の育成環境で意識していることを記録します。',
+    image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1000&q=85',
+    body: '高温期は用土の乾きが早くなりますが、水を増やす前に株元の風を確認します。灌水後に熱気と湿気を残さないことが、葉の傷みを減らす基本です。朝の時間帯に水を与え、午後はやわらかな送風を保つようにしています。',
+  },
+  {
+    slug: 'autumn-green-market', category: 'お知らせ', categories: ['お知らせ'], tags: ['イベント'], date: '2026.08.10', title: 'GREEN MARKET 出店のお知らせ',
+    excerpt: '9月14日（日）、代々木公園で開催されるGREEN MARKETに出店します。育成記録付きの株と、管理用品をお持ちします。',
+    image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=1000&q=85',
+    body: '会場では、アガベ、ビカクシダ、アンスリウムの育成株を中心に販売予定です。すべての対象株には管理番号を付与し、こちらの記録サイトで来歴をご確認いただけます。',
+  },
+  {
+    slug: 'agave-white-ice-update', category: 'アガベ', categories: ['アガベ'], tags: ['White Ice', 'HG-24-017'], managementNumbers: ['HG-24-017'], date: '2026.08.03', title: 'White Ice の葉幅と鋸歯の変化',
+    excerpt: '管理番号 HG-24-017 の夏季記録。新葉2枚が展開し、葉幅と鋸歯の白さが安定してきました。',
+    image: 'https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?auto=format&fit=crop&w=1000&q=85',
+    body: '今回の新葉は前回よりも葉幅が増し、鋸歯の出方も揃ってきました。日照を急に強めず、風を保ちながら締めて育成しています。詳細な履歴は個別の成長記録ページにも掲載しています。',
+  },
+];
+
+export const articles: Article[] = [...instagramArticles, ...siteArticles];
+
+export const event = {
+  label: 'NEXT EVENT', date: '2026.09.14 SUN', name: 'GREEN MARKET 2026 AUTUMN', place: '代々木公園 ケヤキ並木', time: '10:00 – 16:00',
+};
