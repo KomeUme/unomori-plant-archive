@@ -2,7 +2,14 @@
 
 import { useMemo, useState } from 'react';
 import { Footer, Header } from '../components';
-import { getParentStocksByVariety, varieties, type Variety } from '../data';
+import {
+  getLatestAnnualAverageBreedingReadyPlantCount,
+  getLatestAnnualNewOffsetCount,
+  getParentStocksByVariety,
+  varieties,
+  type ParentStock,
+  type Variety,
+} from '../data';
 import { siteHref } from '../site-url';
 
 type SortKey = 'name' | 'parentCount' | 'annualNewOffsetCount' | 'offsetsPerBreedingPlant';
@@ -13,6 +20,13 @@ const displayNumber = (value: number | null) => value === null ? '—' : `${valu
 const totalFor = (values: Array<number | null>) => {
   const numbers = values.filter((value): value is number => value !== null);
   return numbers.length ? numbers.reduce((sum, value) => sum + value, 0) : null;
+};
+
+const varietyOffsetRate = (stocks: ParentStock[]) => {
+  const newOffsets = totalFor(stocks.map(getLatestAnnualNewOffsetCount));
+  const breedingPlants = totalFor(stocks.map(getLatestAnnualAverageBreedingReadyPlantCount));
+  if (newOffsets === null || breedingPlants === null || breedingPlants <= 0) return null;
+  return Math.round((newOffsets / breedingPlants) * 10) / 10;
 };
 
 const compareNullableNumber = (a: number | null, b: number | null, direction: SortDirection) => {
@@ -32,11 +46,11 @@ export default function MotherPlantsPage() {
     if (sortKey === 'name') return sortDirection === 'asc' ? a.name.localeCompare(b.name, 'ja') : b.name.localeCompare(a.name, 'ja');
     if (sortKey === 'parentCount') return sortDirection === 'asc' ? aStocks.length - bStocks.length : bStocks.length - aStocks.length;
     const aValue = sortKey === 'annualNewOffsetCount'
-      ? totalFor(aStocks.map((stock) => stock.annualNewOffsetCount))
-      : totalFor(aStocks.map((stock) => stock.offsetsPerBreedingPlant));
+      ? totalFor(aStocks.map(getLatestAnnualNewOffsetCount))
+      : varietyOffsetRate(aStocks);
     const bValue = sortKey === 'annualNewOffsetCount'
-      ? totalFor(bStocks.map((stock) => stock.annualNewOffsetCount))
-      : totalFor(bStocks.map((stock) => stock.offsetsPerBreedingPlant));
+      ? totalFor(bStocks.map(getLatestAnnualNewOffsetCount))
+      : varietyOffsetRate(bStocks);
     return compareNullableNumber(aValue, bValue, sortDirection);
   }), [sortDirection, sortKey]);
 
@@ -63,8 +77,8 @@ export default function MotherPlantsPage() {
 
 function VarietyRow({ variety }: { variety: Variety }) {
   const stocks = getParentStocksByVariety(variety.slug);
-  const newOffsets = totalFor(stocks.map((stock) => stock.annualNewOffsetCount));
-  const perStock = totalFor(stocks.map((stock) => stock.offsetsPerBreedingPlant));
+  const newOffsets = totalFor(stocks.map(getLatestAnnualNewOffsetCount));
+  const perStock = varietyOffsetRate(stocks);
   return <a className="variety-index-row" href={siteHref(`/varieties/${variety.slug}`)}>
     <div className="variety-index-image">{variety.image ? <img src={siteHref(variety.image)} alt={`${variety.name}の親株`} /> : <span>{variety.type}</span>}</div>
     <div className="variety-index-name"><p>{variety.type}</p><h3>{variety.name}</h3><span>{variety.botanicalName}</span></div>

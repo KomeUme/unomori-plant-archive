@@ -42,21 +42,41 @@ export const plants: Plant[] = [
   },
 ];
 
-export type CloneSizeCounts = {
-  large: number | null;
-  medium: number | null;
-  small: number | null;
+/** 鉢サイズは、現在の運用で使う号数だけを選べるようにしています。 */
+export const potSizes = [2.5, 3, 4, 5] as const;
+export type PotSize = (typeof potSizes)[number];
+
+export type AttachedOffsetRecord = {
+  /** 親株に付いたままの子株が発生した年 */
+  year: number;
+  count: number;
+};
+
+/**
+ * 1レコード = 現在管理している1鉢。
+ * 鉢数と株数を別の単位で残すことで、親株に付いた子株も追跡できます。
+ */
+export type ManagedPot = {
+  id: string;
+  potSize: PotSize;
+  rootedPlantCount: number | null;
+  attachedOffsets: AttachedOffsetRecord[];
+  breedingReadyPlantCount: number | null;
+  notes?: string;
 };
 
 export type AnnualCloneRecord = {
   year: number;
-  openingCloneCount: number | null;
+  openingPlantCount: number | null;
+  openingAttachedOffsetCount: number | null;
+  openingBreedingReadyPlantCount: number | null;
   newOffsetCount: number | null;
-  recoveredCount: number | null;
-  retainedOffsetCount: number | null;
+  separatedOffsetCount: number | null;
   deaths: number | null;
   soldCount: number | null;
-  closingCloneCount: number | null;
+  closingPlantCount: number | null;
+  closingAttachedOffsetCount: number | null;
+  closingBreedingReadyPlantCount: number | null;
 };
 
 export type ParentStock = {
@@ -66,15 +86,8 @@ export type ParentStock = {
   origin: string;
   image?: string;
   selectionReason: string;
-  currentCloneTotal: number | null;
-  cloneSizes: CloneSizeCounts;
-  annualNewOffsetCount: number | null;
-  annualRecoveredCount: number | null;
-  yearEndRetainedOffsetCount: number | null;
-  annualDeaths: number | null;
-  annualSoldCount: number | null;
-  breedingReadyCount: number | null;
-  offsetsPerBreedingPlant: number | null;
+  /** null = 鉢別の現況はまだ未記録。空配列 = 現在は管理鉢がない。 */
+  currentPots: ManagedPot[] | null;
   notes: string;
   annualHistory: AnnualCloneRecord[];
 };
@@ -114,9 +127,9 @@ export const varieties: Variety[] = [
 ];
 
 const blankAnnualHistory = (): AnnualCloneRecord[] => [
-  { year: 2024, openingCloneCount: null, newOffsetCount: null, recoveredCount: null, retainedOffsetCount: null, deaths: null, soldCount: null, closingCloneCount: null },
-  { year: 2025, openingCloneCount: null, newOffsetCount: null, recoveredCount: null, retainedOffsetCount: null, deaths: null, soldCount: null, closingCloneCount: null },
-  { year: 2026, openingCloneCount: null, newOffsetCount: null, recoveredCount: null, retainedOffsetCount: null, deaths: null, soldCount: null, closingCloneCount: null },
+  { year: 2024, openingPlantCount: null, openingAttachedOffsetCount: null, openingBreedingReadyPlantCount: null, newOffsetCount: null, separatedOffsetCount: null, deaths: null, soldCount: null, closingPlantCount: null, closingAttachedOffsetCount: null, closingBreedingReadyPlantCount: null },
+  { year: 2025, openingPlantCount: null, openingAttachedOffsetCount: null, openingBreedingReadyPlantCount: null, newOffsetCount: null, separatedOffsetCount: null, deaths: null, soldCount: null, closingPlantCount: null, closingAttachedOffsetCount: null, closingBreedingReadyPlantCount: null },
+  { year: 2026, openingPlantCount: null, openingAttachedOffsetCount: null, openingBreedingReadyPlantCount: null, newOffsetCount: null, separatedOffsetCount: null, deaths: null, soldCount: null, closingPlantCount: null, closingAttachedOffsetCount: null, closingBreedingReadyPlantCount: null },
 ];
 
 const createSasanoyukiParentStock = (id: string): ParentStock => ({
@@ -125,16 +138,8 @@ const createSasanoyukiParentStock = (id: string): ParentStock => ({
   lineageName: '血統情報未登録',
   origin: '由来未登録',
   selectionReason: '特徴・選抜理由を記録予定です。',
-  currentCloneTotal: null,
-  cloneSizes: { large: null, medium: null, small: null },
-  annualNewOffsetCount: null,
-  annualRecoveredCount: null,
-  yearEndRetainedOffsetCount: null,
-  annualDeaths: null,
-  annualSoldCount: null,
-  breedingReadyCount: null,
-  offsetsPerBreedingPlant: null,
-  notes: '親株IDを登録済み。その他の管理情報は記録待ちです。',
+  currentPots: null,
+  notes: '親株IDを登録済み。鉢ごとの管理情報と年次履歴は記録待ちです。',
   annualHistory: blankAnnualHistory(),
 });
 
@@ -156,16 +161,8 @@ export const parentStocks: ParentStock[] = [
     origin: '鵜ノ森管理株',
     image: '/hero-unomori.jpg',
     selectionReason: '白い葉模様・肉厚な葉姿。葉の重なりと輪郭の個性を記録対象としています。',
-    currentCloneTotal: null,
-    cloneSizes: { large: null, medium: null, small: null },
-    annualNewOffsetCount: null,
-    annualRecoveredCount: null,
-    yearEndRetainedOffsetCount: null,
-    annualDeaths: null,
-    annualSoldCount: null,
-    breedingReadyCount: null,
-    offsetsPerBreedingPlant: null,
-    notes: '初回の数値入力待ち。小さな子株は、発生年と回収年を分けて年次履歴へ記録します。',
+    currentPots: null,
+    notes: '初回の数値入力待ち。子株は発生年と分離・回収年を分けて年次履歴へ記録します。',
     annualHistory: blankAnnualHistory(),
   },
   createSasanoyukiParentStock('X-01'),
@@ -191,6 +188,79 @@ export function getParentStocksByVariety(slug: string) {
 
 export function getParentStockById(id: string) {
   return parentStocks.find((stock) => stock.id === id);
+}
+
+const sumNullable = (values: Array<number | null>) => {
+  if (values.some((value) => value === null)) return null;
+  return values.reduce<number>((sum, value) => sum + (value ?? 0), 0);
+};
+
+export function getManagedPotCount(stock: ParentStock) {
+  return stock.currentPots === null ? null : stock.currentPots.length;
+}
+
+export function getCurrentRootedPlantCount(stock: ParentStock) {
+  if (stock.currentPots === null) return null;
+  return sumNullable(stock.currentPots.map((pot) => pot.rootedPlantCount));
+}
+
+export function getCurrentAttachedOffsetCount(stock: ParentStock) {
+  if (stock.currentPots === null) return null;
+  return stock.currentPots.reduce((total, pot) => total + pot.attachedOffsets.reduce((sum, offset) => sum + offset.count, 0), 0);
+}
+
+export function getCurrentHeldPlantCount(stock: ParentStock) {
+  const rooted = getCurrentRootedPlantCount(stock);
+  const attached = getCurrentAttachedOffsetCount(stock);
+  return rooted === null || attached === null ? null : rooted + attached;
+}
+
+export function getCurrentBreedingReadyPlantCount(stock: ParentStock) {
+  if (stock.currentPots === null) return null;
+  return sumNullable(stock.currentPots.map((pot) => pot.breedingReadyPlantCount));
+}
+
+export function getPotSizeSummary(stock: ParentStock, potSize: PotSize) {
+  if (stock.currentPots === null) return null;
+  const pots = stock.currentPots.filter((pot) => pot.potSize === potSize);
+  const rootedPlantCount = sumNullable(pots.map((pot) => pot.rootedPlantCount));
+  const attachedOffsetCount = pots.reduce((total, pot) => total + pot.attachedOffsets.reduce((sum, offset) => sum + offset.count, 0), 0);
+  return {
+    potCount: pots.length,
+    rootedPlantCount,
+    attachedOffsetCount,
+    heldPlantCount: rootedPlantCount === null ? null : rootedPlantCount + attachedOffsetCount,
+  };
+}
+
+export function getLatestRecordedAnnualHistory(stock: ParentStock) {
+  return stock.annualHistory
+    .filter((record) => Object.entries(record).some(([key, value]) => key !== 'year' && value !== null))
+    .sort((a, b) => b.year - a.year)[0] ?? null;
+}
+
+export function getLatestAnnualNewOffsetCount(stock: ParentStock) {
+  return getLatestRecordedAnnualHistory(stock)?.newOffsetCount ?? null;
+}
+
+export function getLatestAnnualSoldCount(stock: ParentStock) {
+  return getLatestRecordedAnnualHistory(stock)?.soldCount ?? null;
+}
+
+export function getLatestAnnualAverageBreedingReadyPlantCount(stock: ParentStock) {
+  const record = getLatestRecordedAnnualHistory(stock);
+  if (!record) return null;
+  const opening = record.openingBreedingReadyPlantCount;
+  const closing = record.closingBreedingReadyPlantCount;
+  if (opening !== null && closing !== null) return (opening + closing) / 2;
+  return opening ?? closing;
+}
+
+export function getOffsetsPerBreedingPlant(stock: ParentStock) {
+  const newOffsets = getLatestAnnualNewOffsetCount(stock);
+  const averageBreedingPlants = getLatestAnnualAverageBreedingReadyPlantCount(stock);
+  if (newOffsets === null || averageBreedingPlants === null || averageBreedingPlants <= 0) return null;
+  return Math.round((newOffsets / averageBreedingPlants) * 10) / 10;
 }
 
 export type Article = {

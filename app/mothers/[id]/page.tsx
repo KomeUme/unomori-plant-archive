@@ -1,7 +1,20 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Footer, Header } from '../../components';
-import { getParentStockById, getVarietyBySlug, parentStocks, type ParentStock } from '../../data';
+import {
+  getCurrentAttachedOffsetCount,
+  getCurrentBreedingReadyPlantCount,
+  getCurrentHeldPlantCount,
+  getCurrentRootedPlantCount,
+  getManagedPotCount,
+  getParentStockById,
+  getPotSizeSummary,
+  getVarietyBySlug,
+  parentStocks,
+  potSizes,
+  type ManagedPot,
+  type ParentStock,
+} from '../../data';
 import { siteHref } from '../../site-url';
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -37,13 +50,13 @@ export default async function MotherDetailPage({ params }: PageProps) {
       </div>
     </section>
     <section className="section stock-ledger-section">
-      <div className="section-heading"><div><p className="eyebrow">CURRENT CLONE LEDGER</p><h2>現在の管理値</h2></div><p>このページでは、親株から発生した子株の状態と年間の出入りを一株ごとに記録します。</p></div>
+      <div className="section-heading"><div><p className="eyebrow">CURRENT STOCK LEDGER</p><h2>現在の在庫内訳</h2></div><p>鉢の個数と株の数を分け、親株に付いたままの子株も発生年別に記録します。</p></div>
       <CurrentLedger stock={stock} />
     </section>
     <section className="section annual-history-section">
-      <div className="section-heading"><div><p className="eyebrow">ANNUAL CLONE HISTORY</p><h2>年次履歴</h2></div><p>発生数と回収数を別欄で記録することで、親株に残置した子株も翌年まで追跡できます。</p></div>
-      <div className="annual-table-wrap"><table className="annual-history-table"><thead><tr><th>年</th><th>年初クローン数</th><th>新規子株発生数</th><th>回収数</th><th>年末残置数</th><th>枯死数</th><th>販売数</th><th>年末クローン数</th></tr></thead><tbody>{stock.annualHistory.slice().sort((a, b) => b.year - a.year).map((record) => <tr key={record.year}><th>{record.year}</th><td>{displayNumber(record.openingCloneCount)}</td><td>{displayNumber(record.newOffsetCount)}</td><td>{displayNumber(record.recoveredCount)}</td><td>{displayNumber(record.retainedOffsetCount)}</td><td>{displayNumber(record.deaths)}</td><td>{displayNumber(record.soldCount)}</td><td>{displayNumber(record.closingCloneCount)}</td></tr>)}</tbody></table></div>
-      <p className="history-footnote">※ 「新規子株発生数」はその年に確認した子株数、「回収数」は株分けして親株から外した数です。小さな子株は年末残置数として翌年の回収記録につなげます。</p>
+      <div className="section-heading"><div><p className="eyebrow">ANNUAL STOCK HISTORY</p><h2>年次履歴</h2></div><p>発生・分離・販売を別に記録し、年をまたいで親株に付く子株も追跡します。</p></div>
+      <div className="annual-table-wrap"><table className="annual-history-table"><thead><tr><th>年</th><th>年初保有株</th><th>年初未分離子株</th><th>新規子株発生</th><th>分離・回収</th><th>販売</th><th>枯死</th><th>年末保有株</th><th>年末未分離子株</th></tr></thead><tbody>{stock.annualHistory.slice().sort((a, b) => b.year - a.year).map((record) => <tr key={record.year}><th>{record.year}</th><td>{displayNumber(record.openingPlantCount)}</td><td>{displayNumber(record.openingAttachedOffsetCount)}</td><td>{displayNumber(record.newOffsetCount)}</td><td>{displayNumber(record.separatedOffsetCount)}</td><td>{displayNumber(record.soldCount)}</td><td>{displayNumber(record.deaths)}</td><td>{displayNumber(record.closingPlantCount)}</td><td>{displayNumber(record.closingAttachedOffsetCount)}</td></tr>)}</tbody></table></div>
+      <p className="history-footnote">※ 「分離・回収」は親株から外して別鉢へ移した数で、保有株数を減らす処理ではありません。年末保有株数は、年初保有株数＋新規子株発生－販売－枯死で確認します。</p>
     </section>
     <Footer />
   </main>;
@@ -51,9 +64,39 @@ export default async function MotherDetailPage({ params }: PageProps) {
 
 function CurrentLedger({ stock }: { stock: ParentStock }) {
   const metrics = [
-    ['現クローン総数', stock.currentCloneTotal], ['大サイズ', stock.cloneSizes.large], ['中サイズ', stock.cloneSizes.medium], ['小サイズ', stock.cloneSizes.small],
-    ['年間新規子株発生数', stock.annualNewOffsetCount], ['年間回収数', stock.annualRecoveredCount], ['年末時点の残置子株数', stock.yearEndRetainedOffsetCount], ['枯死数', stock.annualDeaths],
-    ['販売数', stock.annualSoldCount], ['繁殖可能サイズの株数', stock.breedingReadyCount], ['1繁殖可能株あたり年間子株発生数', stock.offsetsPerBreedingPlant],
+    ['現在保有株数', getCurrentHeldPlantCount(stock)], ['管理鉢数', getManagedPotCount(stock)], ['主株・独立株', getCurrentRootedPlantCount(stock)],
+    ['未分離子株', getCurrentAttachedOffsetCount(stock)], ['繁殖可能株', getCurrentBreedingReadyPlantCount(stock)],
   ] as const;
-  return <div className="current-ledger-grid">{metrics.map(([label, value]) => <div key={label}><p>{label}</p><b>{displayNumber(value)}</b></div>)}</div>;
+  return <>
+    <div className="current-ledger-grid">{metrics.map(([label, value]) => <div key={label}><p>{label}</p><b>{displayNumber(value)}</b></div>)}</div>
+    <p className="current-ledger-note">※ 現在保有株数は、手元にある主株・独立株・未分離子株の合計です。販売済み・枯死した株は含めません。</p>
+    <PotSizeSummary stock={stock} />
+    <ManagedPotTable stock={stock} />
+  </>;
+}
+
+function PotSizeSummary({ stock }: { stock: ParentStock }) {
+  return <div className="pot-size-summary">
+    <div className="pot-inventory-heading"><div><p className="eyebrow">POT SIZE OVERVIEW</p><h3>鉢サイズ別の内訳</h3></div><p>鉢サイズは 2.5・3・4・5号で記録します。</p></div>
+    <div className="pot-size-summary-wrap"><table className="pot-size-summary-table"><thead><tr><th>鉢サイズ</th>{potSizes.map((potSize) => <th key={potSize}>{potSize}号</th>)}</tr></thead><tbody>
+      <tr><th>管理鉢数</th>{potSizes.map((potSize) => <td key={potSize}>{displayNumber(getPotSizeSummary(stock, potSize)?.potCount ?? null)}</td>)}</tr>
+      <tr><th>保有株数</th>{potSizes.map((potSize) => <td key={potSize}>{displayNumber(getPotSizeSummary(stock, potSize)?.heldPlantCount ?? null)}</td>)}</tr>
+    </tbody></table></div>
+  </div>;
+}
+
+function ManagedPotTable({ stock }: { stock: ParentStock }) {
+  return <div className="pot-inventory">
+    <div className="pot-inventory-heading"><div><p className="eyebrow">CURRENT POT INVENTORY</p><h3>現在の鉢・株群台帳</h3></div><p>各行を1鉢として管理します。未分離子株は、発生年ごとに残します。</p></div>
+    {stock.currentPots === null ? <p className="pot-inventory-empty">鉢ごとの記録は未登録です。</p> : <div className="managed-pot-table-wrap"><table className="managed-pot-table"><thead><tr><th>鉢ID</th><th>鉢サイズ</th><th>主株・独立株</th><th>未分離子株（発生年別）</th><th>鉢内株数</th><th>繁殖可能株</th><th>備考</th></tr></thead><tbody>{stock.currentPots.length ? stock.currentPots.map((pot) => <ManagedPotRow key={pot.id} pot={pot} />) : <tr><td colSpan={7}>現在管理している鉢はありません。</td></tr>}</tbody></table></div>}
+  </div>;
+}
+
+function ManagedPotRow({ pot }: { pot: ManagedPot }) {
+  const attachedCount = pot.attachedOffsets.reduce((total, offset) => total + offset.count, 0);
+  const heldPlantCount = pot.rootedPlantCount === null ? null : pot.rootedPlantCount + attachedCount;
+  const attachedOffsetLabel = pot.attachedOffsets.length
+    ? pot.attachedOffsets.slice().sort((a, b) => a.year - b.year).map((offset) => `${offset.year}年：${offset.count}株`).join(' / ')
+    : '0株';
+  return <tr><th>{pot.id}</th><td>{pot.potSize}号</td><td>{displayNumber(pot.rootedPlantCount)}</td><td>{attachedOffsetLabel}</td><td>{displayNumber(heldPlantCount)}</td><td>{displayNumber(pot.breedingReadyPlantCount)}</td><td>{pot.notes || '—'}</td></tr>;
 }
