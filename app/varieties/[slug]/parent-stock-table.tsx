@@ -15,7 +15,7 @@ import {
 } from '../../data';
 import { siteHref } from '../../site-url';
 
-type SortKey = 'id' | 'currentHeldPlantCount' | 'managedPotCount' | 'breedingReadyPlantCount' | 'annualNewOffsetCount' | 'annualSoldCount' | 'offsetsPerBreedingPlant';
+type SortKey = 'id' | 'currentHeldPlantCount' | 'breedingReadyPlantCount' | 'offsetsPerBreedingPlant';
 type SortDirection = 'asc' | 'desc';
 
 const numberOrDash = (value: number | null) => value === null ? '—' : value;
@@ -29,18 +29,22 @@ const compare = (a: number | null, b: number | null, direction: SortDirection) =
 
 const valueForSort = (stock: ParentStock, key: Exclude<SortKey, 'id'>) => {
   if (key === 'currentHeldPlantCount') return getCurrentHeldPlantCount(stock);
-  if (key === 'managedPotCount') return getManagedPotCount(stock);
   if (key === 'breedingReadyPlantCount') return getCurrentBreedingReadyPlantCount(stock);
-  if (key === 'annualNewOffsetCount') return getLatestAnnualNewOffsetCount(stock);
-  if (key === 'annualSoldCount') return getLatestAnnualSoldCount(stock);
   return getOffsetsPerBreedingPlant(stock);
 };
 
 type ParentStockGroup = {
-  primary: string;
-  prefix: string;
+  primary: string | null;
+  prefix: string | null;
   stocks: ParentStock[];
 };
+
+const sortOptions: Array<{ key: SortKey; label: string }> = [
+  { key: 'id', label: '管理番号順' },
+  { key: 'currentHeldPlantCount', label: '保有株数順' },
+  { key: 'breedingReadyPlantCount', label: '繁殖可能株順' },
+  { key: 'offsetsPerBreedingPlant', label: '1株あたり年間子株順' },
+];
 
 export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
   const [sortKey, setSortKey] = useState<SortKey>('id');
@@ -62,11 +66,13 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
       return result || a.id.localeCompare(b.id);
     };
 
+    if (sortKey !== 'id') return [{ primary: null, prefix: null, stocks: [...stocks].sort(orderStocks) }];
+
     return [...groupMap.values()]
       .sort((a, b) => {
         const aPriority = a.primary === 'U' ? 0 : 1;
         const bPriority = b.primary === 'U' ? 0 : 1;
-        return aPriority - bPriority || a.primary.localeCompare(b.primary) || a.prefix.localeCompare(b.prefix);
+        return aPriority - bPriority || (a.primary ?? '').localeCompare(b.primary ?? '') || (a.prefix ?? '').localeCompare(b.prefix ?? '');
       })
       .map((group) => ({ ...group, stocks: group.stocks.sort(orderStocks) }));
   }, [direction, sortKey, stocks]);
@@ -79,24 +85,26 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
     }
   };
 
-  const label = (key: SortKey, text: string) => `${text}${sortKey === key ? direction === 'asc' ? ' ↑' : ' ↓' : ''}`;
+  const buttonLabel = (key: SortKey, text: string) => `${text}${sortKey === key ? direction === 'asc' ? ' ↑' : ' ↓' : ''}`;
 
-  return <div className="pedigree-table-wrap">
-    <table className="pedigree-table">
+  return <>
+    <div className="sort-bar parent-stock-sort-bar" aria-label="親株一覧の並び替え"><p>表示順</p><div>{sortOptions.map(({ key, label }) => <button type="button" key={key} className={sortKey === key ? 'is-active' : ''} aria-pressed={sortKey === key} onClick={() => changeSort(key)}>{buttonLabel(key, label)}</button>)}</div></div>
+    <div className="pedigree-table-wrap">
+      <table className="pedigree-table">
       <thead><tr>
-        <th><button type="button" onClick={() => changeSort('id')}>{label('id', '親株ID')}</button></th>
+        <th>親株ID</th>
         <th>血統名・由来</th><th>親株写真</th><th>特徴・選抜理由</th>
-        <th><button type="button" onClick={() => changeSort('currentHeldPlantCount')}>{label('currentHeldPlantCount', '現在保有株数')}</button></th>
-        <th><button type="button" onClick={() => changeSort('managedPotCount')}>{label('managedPotCount', '管理鉢数')}</button></th>
+        <th>現在保有株数</th>
+        <th>管理鉢数</th>
         <th>主株・独立株</th><th>未分離子株</th>
-        <th><button type="button" onClick={() => changeSort('breedingReadyPlantCount')}>{label('breedingReadyPlantCount', '繁殖可能株')}</button></th>
-        <th><button type="button" onClick={() => changeSort('annualNewOffsetCount')}>{label('annualNewOffsetCount', '最新年の子株発生')}</button></th>
-        <th><button type="button" onClick={() => changeSort('annualSoldCount')}>{label('annualSoldCount', '最新年の販売')}</button></th>
-        <th><button type="button" onClick={() => changeSort('offsetsPerBreedingPlant')}>{label('offsetsPerBreedingPlant', '1株あたり年間子株')}</button></th>
+        <th>繁殖可能株</th>
+        <th>最新年の子株発生</th>
+        <th>最新年の販売</th>
+        <th>1株あたり年間子株</th>
         <th>備考</th>
       </tr></thead>
       <tbody>{groupedStocks.map((group) => <Fragment key={`${group.primary}-${group.prefix}`}>
-        <tr className="management-group-row"><th colSpan={13} scope="rowgroup"><span>{group.primary}系</span><b>管理記号 {group.prefix}</b><em>{group.stocks.length}株</em></th></tr>
+        {group.primary && group.prefix ? <tr className="management-group-row"><th colSpan={13} scope="rowgroup"><span>{group.primary}系</span><b>管理記号 {group.prefix}</b><em>{group.stocks.length}株</em></th></tr> : null}
         {group.stocks.map((stock) => <tr key={stock.id}>
           <td><a className="stock-id-link" href={siteHref(`/mothers/${stock.id}`)}><span>{stock.id}</span><b>詳細を見る →</b></a></td>
           <td><strong>{stock.lineageName}</strong><span className="cell-subtext">{stock.origin}</span></td>
@@ -107,6 +115,7 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
           <td className="notes-cell">{stock.notes}</td>
         </tr>)}
       </Fragment>)}</tbody>
-    </table>
-  </div>;
+      </table>
+    </div>
+  </>;
 }
