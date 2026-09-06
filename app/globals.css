@@ -121,10 +121,10 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 /* Keep the first mobile view focused on the introduction and plant image. */
 @media (max-width:620px) {
   .site-header { height:58px; }
-  .hero-copy { padding:24px 6vw; }
-  .hero .eyebrow { margin-bottom:14px; }
-  .hero h1 { font-size:37px; }
-  .hero-lead { margin:16px 0 0; font-size:12px; line-height:1.8; }
+  .hero-copy { padding:30px 6vw 32px; }
+  .hero .eyebrow { margin-bottom:16px; }
+  .hero h1 { font-size:36px; }
+  .hero-lead { margin:18px 0 0; font-size:12px; line-height:1.8; }
 }
 
 /* Parent stock and pedigree ledger */
