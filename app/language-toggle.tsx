@@ -57,7 +57,7 @@ function getServerLanguage() {
  * This keeps the Japanese archive as the source of truth while including future
  * articles and ledger updates in the requested translation automatically.
  */
-export function LanguageToggle() {
+export function LanguageToggle({ className = '' }: { className?: string }) {
   const english = useSyncExternalStore(subscribeToLanguage, getClientLanguage, getServerLanguage);
 
   useEffect(() => {
@@ -86,7 +86,7 @@ export function LanguageToggle() {
 
   return (
     <button
-      className="language-toggle"
+      className={`language-toggle ${className}`.trim()}
       type="button"
       aria-label={english ? '日本語表示に戻る' : '英語で表示する'}
       title={english ? '日本語表示に戻る' : 'English'}
