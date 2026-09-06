@@ -86,6 +86,7 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
   };
 
   const buttonLabel = (key: SortKey, text: string) => `${text}${sortKey === key ? direction === 'asc' ? ' ↑' : ' ↓' : ''}`;
+  const openDetail = (id: string) => { window.location.assign(siteHref(`/mothers/${id}`)); };
 
   return <>
     <div className="sort-bar parent-stock-sort-bar" aria-label="親株一覧の並び替え"><p>表示順</p><div>{sortOptions.map(({ key, label }) => <button type="button" key={key} className={sortKey === key ? 'is-active' : ''} aria-pressed={sortKey === key} onClick={() => changeSort(key)}>{buttonLabel(key, label)}</button>)}</div></div>
@@ -105,10 +106,12 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
       </tr></thead>
       <tbody>{groupedStocks.map((group) => <Fragment key={`${group.primary}-${group.prefix}`}>
         {group.primary && group.prefix ? <tr className="management-group-row"><th colSpan={13} scope="rowgroup"><span>{group.primary}系</span><b>管理記号 {group.prefix}</b><em>{group.stocks.length}株</em></th></tr> : null}
-        {group.stocks.map((stock) => <tr key={stock.id}>
-          <td><a className="stock-id-link" href={siteHref(`/mothers/${stock.id}`)}><span>{stock.id}</span><b>詳細を見る →</b></a></td>
+        {group.stocks.map((stock) => <tr key={stock.id} className="stock-table-row" role="link" tabIndex={0} aria-label={`${stock.id}の詳細を開く`} onClick={() => openDetail(stock.id)} onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openDetail(stock.id); }
+        }}>
+          <td><span className="stock-id-link">{stock.id}</span></td>
           <td><strong>{stock.lineageName}</strong><span className="cell-subtext">{stock.origin}</span></td>
-          <td>{stock.image ? <a className="stock-table-image" href={siteHref(`/mothers/${stock.id}`)} aria-label={`${stock.id}の詳細を開く`}><img src={siteHref(stock.image)} alt={`${stock.id} 親株写真`} /></a> : <span className="image-pending">未登録</span>}</td>
+          <td>{stock.image ? <span className="stock-table-image"><img src={siteHref(stock.image)} alt={`${stock.id} 親株写真`} /></span> : <span className="image-pending">未登録</span>}</td>
           <td className="selection-cell">{stock.selectionReason}</td>
           <td>{numberOrDash(getCurrentHeldPlantCount(stock))}</td><td>{numberOrDash(getManagedPotCount(stock))}</td><td>{numberOrDash(getCurrentRootedPlantCount(stock))}</td><td>{numberOrDash(getCurrentAttachedOffsetCount(stock))}</td>
           <td>{numberOrDash(getCurrentBreedingReadyPlantCount(stock))}</td><td>{numberOrDash(getLatestAnnualNewOffsetCount(stock))}</td><td>{numberOrDash(getLatestAnnualSoldCount(stock))}</td><td>{numberOrDash(getOffsetsPerBreedingPlant(stock))}</td>
