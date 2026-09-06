@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useMemo, useRef, useState, type PointerEvent } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 import {
   getCurrentAttachedOffsetCount,
   getCurrentBreedingReadyPlantCount,
@@ -49,6 +49,20 @@ type TablePointerState = {
   stockId: string | null;
 };
 
+type SelectedImage = {
+  id: string;
+  src: string;
+  alt: string;
+};
+
+type ImagePanState = {
+  pointerId: number | null;
+  startX: number;
+  startY: number;
+  originX: number;
+  originY: number;
+};
+
 const clickDurationLimit = 500;
 const dragDistanceLimit = 8;
 
@@ -63,9 +77,29 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
   const [sortKey, setSortKey] = useState<SortKey>('id');
   const [direction, setDirection] = useState<SortDirection>('asc');
   const [isDragging, setIsDragging] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<SelectedImage | null>(null);
+  const [imageZoom, setImageZoom] = useState(1);
+  const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 });
+  const [isImagePanning, setIsImagePanning] = useState(false);
   const tableWrapRef = useRef<HTMLDivElement>(null);
   const pointerStateRef = useRef<TablePointerState>({ pointerId: null, startX: 0, startY: 0, scrollLeft: 0, startedAt: 0, moved: false, stockId: null });
   const suppressRowClickRef = useRef(false);
+  const imagePanRef = useRef<ImagePanState>({ pointerId: null, startX: 0, startY: 0, originX: 0, originY: 0 });
+
+  useEffect(() => {
+    if (!selectedImage) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSelectedImage(null);
+    };
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [selectedImage]);
 
   const groupedStocks = useMemo(() => {
     const groupMap = new Map<string, ParentStockGroup>();
@@ -104,6 +138,44 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
 
   const buttonLabel = (key: SortKey, text: string) => `${text}${sortKey === key ? direction === 'asc' ? ' ↑' : ' ↓' : ''}`;
   const openDetail = (id: string) => { window.location.assign(siteHref(`/mothers/${id}`)); };
+  const openImage = (stock: ParentStock) => {
+    if (!stock.image) return;
+    setImageZoom(1);
+    setImageOffset({ x: 0, y: 0 });
+    setSelectedImage({ id: stock.id, src: siteHref(stock.image), alt: `${stock.id} 親株写真` });
+  };
+  const closeImage = () => setSelectedImage(null);
+  const changeImageZoom = (amount: number) => setImageZoom((zoom) => {
+    const nextZoom = Math.min(4, Math.max(1, Number((zoom + amount).toFixed(2))));
+    if (nextZoom === 1) setImageOffset({ x: 0, y: 0 });
+    return nextZoom;
+  });
+  const resetImageView = () => {
+    setImageZoom(1);
+    setImageOffset({ x: 0, y: 0 });
+  };
+
+  const startImagePan = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0 || imageZoom <= 1) return;
+    imagePanRef.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, originX: imageOffset.x, originY: imageOffset.y };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setIsImagePanning(true);
+  };
+
+  const moveImagePan = (event: PointerEvent<HTMLDivElement>) => {
+    const panState = imagePanRef.current;
+    if (panState.pointerId !== event.pointerId) return;
+    setImageOffset({ x: panState.originX + event.clientX - panState.startX, y: panState.originY + event.clientY - panState.startY });
+    event.preventDefault();
+  };
+
+  const finishImagePan = (event: PointerEvent<HTMLDivElement>) => {
+    const panState = imagePanRef.current;
+    if (panState.pointerId !== event.pointerId) return;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    imagePanRef.current = { pointerId: null, startX: 0, startY: 0, originX: 0, originY: 0 };
+    setIsImagePanning(false);
+  };
 
   const startTableDrag = (event: PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return;
@@ -184,7 +256,7 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
         }}>
           <td><span className="stock-id-link">{stock.id}</span></td>
           <td><strong>{stock.lineageName}</strong><span className="cell-subtext">{stock.origin}</span></td>
-          <td>{stock.image ? <span className="stock-table-image"><img src={siteHref(stock.image)} alt={`${stock.id} 親株写真`} /></span> : <span className="image-pending">未登録</span>}</td>
+          <td>{stock.image ? <button type="button" className="stock-table-image" aria-label={`${stock.id}の親株写真を拡大表示`} onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); openImage(stock); }} onDoubleClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}><img src={siteHref(stock.image)} alt={`${stock.id} 親株写真`} /><span className="stock-table-zoom" aria-hidden="true">⌕</span></button> : <span className="image-pending">未登録</span>}</td>
           <td className="selection-cell">{stock.selectionReason}</td>
           <td>{numberOrDash(getCurrentHeldPlantCount(stock))}</td><td>{numberOrDash(getManagedPotCount(stock))}</td><td>{numberOrDash(getCurrentRootedPlantCount(stock))}</td><td>{numberOrDash(getCurrentAttachedOffsetCount(stock))}</td>
           <td>{numberOrDash(getCurrentBreedingReadyPlantCount(stock))}</td><td>{numberOrDash(getLatestAnnualNewOffsetCount(stock))}</td><td>{numberOrDash(getLatestAnnualSoldCount(stock))}</td><td>{numberOrDash(getOffsetsPerBreedingPlant(stock))}</td>
@@ -193,5 +265,15 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
       </Fragment>)}</tbody>
       </table>
     </div>
+    {selectedImage ? <div className="image-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="image-modal-title" onPointerDown={(event) => { if (event.target === event.currentTarget) closeImage(); }}>
+      <div className="image-modal-content">
+        <button type="button" className="image-modal-close" aria-label="画像表示を閉じる" onClick={closeImage}>×</button>
+        <div className="image-modal-heading"><span id="image-modal-title">{selectedImage.id} / 親株写真</span><p>ホイールで拡大・縮小、拡大後はドラッグで移動</p></div>
+        <div className={`image-modal-stage${imageZoom > 1 ? ' is-zoomed' : ''}${isImagePanning ? ' is-panning' : ''}`} onWheel={(event) => { event.preventDefault(); changeImageZoom(event.deltaY < 0 ? .2 : -.2); }} onPointerDown={startImagePan} onPointerMove={moveImagePan} onPointerUp={finishImagePan} onPointerCancel={finishImagePan} onDoubleClick={resetImageView}>
+          <img src={selectedImage.src} alt={selectedImage.alt} style={{ transform: `translate(${imageOffset.x}px, ${imageOffset.y}px) scale(${imageZoom})` }} />
+        </div>
+        <div className="image-modal-controls" aria-label="画像の表示倍率"><button type="button" aria-label="縮小" onClick={() => changeImageZoom(-.2)} disabled={imageZoom <= 1}>−</button><span>{Math.round(imageZoom * 100)}%</span><button type="button" aria-label="拡大" onClick={() => changeImageZoom(.2)} disabled={imageZoom >= 4}>＋</button><button type="button" className="image-modal-reset" onClick={resetImageView}>リセット</button></div>
+      </div>
+    </div> : null}
   </>;
 }
