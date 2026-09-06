@@ -42,12 +42,15 @@ type ParentStockGroup = {
 type TablePointerState = {
   pointerId: number | null;
   startX: number;
+  startY: number;
   scrollLeft: number;
   startedAt: number;
   moved: boolean;
+  stockId: string | null;
 };
 
-const clickDurationLimit = 350;
+const clickDurationLimit = 500;
+const dragDistanceLimit = 8;
 
 const sortOptions: Array<{ key: SortKey; label: string }> = [
   { key: 'id', label: '管理番号順' },
@@ -61,7 +64,7 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
   const [direction, setDirection] = useState<SortDirection>('asc');
   const [isDragging, setIsDragging] = useState(false);
   const tableWrapRef = useRef<HTMLDivElement>(null);
-  const pointerStateRef = useRef<TablePointerState>({ pointerId: null, startX: 0, scrollLeft: 0, startedAt: 0, moved: false });
+  const pointerStateRef = useRef<TablePointerState>({ pointerId: null, startX: 0, startY: 0, scrollLeft: 0, startedAt: 0, moved: false, stockId: null });
   const suppressRowClickRef = useRef(false);
 
   const groupedStocks = useMemo(() => {
@@ -107,7 +110,9 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
     const tableWrap = tableWrapRef.current;
     if (!tableWrap || tableWrap.scrollWidth <= tableWrap.clientWidth) return;
 
-    pointerStateRef.current = { pointerId: event.pointerId, startX: event.clientX, scrollLeft: tableWrap.scrollLeft, startedAt: Date.now(), moved: false };
+    suppressRowClickRef.current = false;
+    const stockId = (event.target as HTMLElement).closest<HTMLTableRowElement>('[data-stock-id]')?.dataset.stockId ?? null;
+    pointerStateRef.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, scrollLeft: tableWrap.scrollLeft, startedAt: Date.now(), moved: false, stockId };
     tableWrap.setPointerCapture(event.pointerId);
   };
 
@@ -116,28 +121,29 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
     const tableWrap = tableWrapRef.current;
     if (!tableWrap || pointerState.pointerId !== event.pointerId) return;
 
-    const distance = event.clientX - pointerState.startX;
-    if (Math.abs(distance) < 5) return;
+    const horizontalDistance = event.clientX - pointerState.startX;
+    const verticalDistance = event.clientY - pointerState.startY;
+    if (Math.max(Math.abs(horizontalDistance), Math.abs(verticalDistance)) < dragDistanceLimit) return;
 
-    if (!pointerState.moved) {
-      pointerState.moved = true;
+    pointerState.moved = true;
+    if (Math.abs(horizontalDistance) >= Math.abs(verticalDistance)) {
       setIsDragging(true);
+      tableWrap.scrollLeft = pointerState.scrollLeft - horizontalDistance;
+      event.preventDefault();
     }
-    tableWrap.scrollLeft = pointerState.scrollLeft - distance;
-    event.preventDefault();
   };
 
   const finishTableDrag = (event: PointerEvent<HTMLDivElement>) => {
     const pointerState = pointerStateRef.current;
     if (pointerState.pointerId !== event.pointerId) return;
 
-    const shouldSuppressClick = pointerState.moved || Date.now() - pointerState.startedAt >= clickDurationLimit;
-    if (shouldSuppressClick) {
+    const isShortClick = !pointerState.moved && Date.now() - pointerState.startedAt < clickDurationLimit;
+    if (pointerState.stockId) {
       suppressRowClickRef.current = true;
-      window.setTimeout(() => { suppressRowClickRef.current = false; }, 0);
+      if (isShortClick) openDetail(pointerState.stockId);
     }
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-    pointerStateRef.current = { pointerId: null, startX: 0, scrollLeft: 0, startedAt: 0, moved: false };
+    pointerStateRef.current = { pointerId: null, startX: 0, startY: 0, scrollLeft: 0, startedAt: 0, moved: false, stockId: null };
     setIsDragging(false);
   };
 
@@ -159,7 +165,14 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
       </tr></thead>
       <tbody>{groupedStocks.map((group) => <Fragment key={`${group.primary}-${group.prefix}`}>
         {group.primary && group.prefix ? <tr className="management-group-row"><th colSpan={13} scope="rowgroup"><span>{group.primary}系</span><b>管理記号 {group.prefix}</b><em>{group.stocks.length}株</em></th></tr> : null}
-        {group.stocks.map((stock) => <tr key={stock.id} className="stock-table-row" role="link" tabIndex={0} aria-label={`${stock.id}の詳細を開く`} onClick={(event) => {
+        {group.stocks.map((stock) => <tr key={stock.id} data-stock-id={stock.id} className="stock-table-row" role="link" tabIndex={0} aria-label={`${stock.id}の詳細を開く`} onClick={(event) => {
+          if (suppressRowClickRef.current) {
+            event.preventDefault();
+            suppressRowClickRef.current = false;
+            return;
+          }
+          openDetail(stock.id);
+        }} onDoubleClick={(event) => {
           if (suppressRowClickRef.current) {
             event.preventDefault();
             suppressRowClickRef.current = false;
