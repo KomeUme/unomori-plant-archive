@@ -16,6 +16,7 @@ import {
   type ParentStock,
 } from '../../data';
 import { siteHref } from '../../site-url';
+import { ParentStockDetailImage } from './parent-stock-detail-image';
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -45,7 +46,7 @@ export default async function MotherDetailPage({ params }: PageProps) {
     <section className="stock-detail-top">
       <a className="back-link" href={siteHref(`/varieties/${variety.slug}`)}>← {variety.name}の親株一覧へ戻る</a>
       <div className="stock-detail-card">
-        <div className="stock-detail-image">{stock.image ? <img src={siteHref(stock.image)} alt={`${stock.id} ${stock.lineageName}`} /> : <span>PHOTO<br />PENDING</span>}</div>
+        <div className="stock-detail-image">{stock.image ? <ParentStockDetailImage image={stock.image} lineageName={stock.lineageName} stockId={stock.id} /> : <span>PHOTO<br />PENDING</span>}</div>
         <div className="stock-detail-copy"><p className="eyebrow">PARENT STOCK / {variety.name}</p><strong>{stock.id}</strong><h1>{stock.lineageName}</h1><p className="stock-origin">由来：{stock.origin}</p><p>{stock.selectionReason}</p><dl><div><dt>品種</dt><dd>{variety.name}</dd></div><div><dt>学名・系統</dt><dd>{variety.botanicalName}</dd></div><div><dt>備考</dt><dd>{stock.notes}</dd></div></dl></div>
       </div>
     </section>
