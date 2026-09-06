@@ -10,9 +10,8 @@ export default function MotherPlantsPage() {
   });
 
   return <main><Header />
-    <section className="page-hero dark-page-hero pedigree-page-hero"><p className="eyebrow">VARIETIES / PEDIGREE</p><h1>品種一覧</h1><p>品種を開くと、親株・血統ごとのクローン推移と年次履歴を確認できます。</p></section>
-    <section className="section variety-index-section">
-      <div className="section-heading"><div><p className="eyebrow">VARIETY INDEX</p><h2>親株・血統をたどる</h2></div><p>親株数が多い品種から表示します。</p></div>
+    <section className="page-hero dark-page-hero pedigree-page-hero"><p className="eyebrow">VARIETIES / PEDIGREE</p><h1>親株・血統をたどる</h1></section>
+    <section className="section variety-index-section" aria-label="品種一覧">
       <div className="variety-index-list">{sortedVarieties.map((variety) => <VarietyRow key={variety.slug} variety={variety} />)}</div>
     </section>
     <Footer />

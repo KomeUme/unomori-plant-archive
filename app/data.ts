@@ -113,14 +113,14 @@ export const varieties: Variety[] = [
   {
     slug: 'kaio-maru',
     name: '海王丸',
-    botanicalName: '学名確認中',
+    botanicalName: 'Gymnocalycium paraguayense',
     type: 'サボテン',
     description: '親株の由来と選抜理由、クローンの推移をこれから整理していきます。',
   },
   {
     slug: 'oukan-ryu',
     name: '王冠竜',
-    botanicalName: '学名確認中',
+    botanicalName: 'Ferocactus glaucescens',
     type: 'サボテン',
     description: '親株の由来と選抜理由、クローンの推移をこれから整理していきます。',
   },

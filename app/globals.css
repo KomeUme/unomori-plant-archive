@@ -120,6 +120,7 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 
 /* Parent stock and pedigree ledger */
 .pedigree-page-hero { position:relative; overflow:hidden; }
+.pedigree-page-hero h1:last-child { margin-bottom:0; }
 .pedigree-page-hero:after { content:""; position:absolute; right:8vw; bottom:-34px; width:190px; height:190px; border:1px solid rgba(217,232,94,.55); border-radius:50%; opacity:.8; }
 .variety-index-section { background:#fbfcf9; }
 .sort-bar { display:flex; align-items:center; justify-content:space-between; gap:24px; margin:0 0 26px; padding:16px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
