@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { id } = await params;
   const stock = getParentStockById(id);
   if (!stock) return { title: '親株が見つかりません｜鵜ノ森' };
-  return { title: `${stock.id}｜親株・血統管理｜鵜ノ森`, description: `${stock.id}の親株・クローン年次記録。` };
+  return { title: `${stock.id}｜親株管理｜鵜ノ森`, description: `${stock.id}の親株・クローン年次記録。` };
 }
 
 export default async function MotherDetailPage({ params }: PageProps) {

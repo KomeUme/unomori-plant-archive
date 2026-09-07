@@ -10,7 +10,7 @@ export default function MotherPlantsPage() {
   });
 
   return <main><Header />
-    <section className="page-hero dark-page-hero pedigree-page-hero"><p className="eyebrow">VARIETIES / PEDIGREE</p><h1>品種一覧</h1></section>
+    <section className="page-hero dark-page-hero pedigree-page-hero"><p className="eyebrow">VARIETIES / PARENT STOCKS</p><h1>品種一覧</h1></section>
     <section className="section variety-index-section" aria-label="品種一覧">
       <div className="variety-index-list">{sortedVarieties.map((variety) => <VarietyRow key={variety.slug} variety={variety} />)}</div>
     </section>

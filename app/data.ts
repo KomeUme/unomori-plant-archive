@@ -115,7 +115,7 @@ export const varieties: Variety[] = [
     name: '笹の雪',
     botanicalName: 'Agave victoriae-reginae',
     type: 'アガベ',
-    description: '白い葉模様と株姿の違いを中心に、親株ごとの血統・クローン推移を記録します。',
+    description: '白い葉模様と株姿の違いを中心に、親株ごとの管理・クローン推移を記録します。',
     image: '/hero-unomori.jpg',
   },
   {

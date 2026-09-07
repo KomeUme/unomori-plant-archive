@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const variety = getVarietyBySlug(slug);
   if (!variety) return { title: '品種が見つかりません｜鵜ノ森' };
-  return { title: `${variety.name}｜親株・血統管理｜鵜ノ森`, description: `${variety.name}の親株・血統とクローン推移の記録。` };
+  return { title: `${variety.name}｜親株管理｜鵜ノ森`, description: `${variety.name}の親株管理とクローン推移の記録。` };
 }
 
 export default async function VarietyDetailPage({ params }: PageProps) {
@@ -29,11 +29,11 @@ export default async function VarietyDetailPage({ params }: PageProps) {
   return <main><Header />
     <section className="variety-detail-hero">
       <div className="variety-detail-hero-content">
-        <p className="eyebrow">VARIETY / PEDIGREE</p>
+        <p className="eyebrow">VARIETY / PARENT STOCKS</p>
         <h1>{variety.name}</h1>
         <p className="variety-botanical">{variety.botanicalName}</p>
         <div className="variety-ledger-intro">
-          <div className="variety-ledger-heading"><h2>親株・血統一覧</h2><span>親株ID {stocks.length}件</span></div>
+          <div className="variety-ledger-heading"><h2>親株一覧</h2><span>親株ID {stocks.length}件</span></div>
           <p>管理番号で親株を一覧化しています。括弧内の記号は補助情報として扱い、並び順には反映しません。</p>
         </div>
         <a className="variety-detail-back-link" href={siteHref('/mother-plants')}><span aria-hidden="true">←</span> 品種一覧へ戻る</a>
