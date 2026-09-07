@@ -2,7 +2,7 @@
 
 import { useMemo, useSyncExternalStore } from 'react';
 import { Footer, Header } from '../components';
-import { articles, getParentStockById, getRelatedArticlesForParentStock } from '../data';
+import { articles, compareManagementNumberIds, getManagementNumberGroup, getParentStockById, getRelatedArticlesForParentStock, parentStocks } from '../data';
 import { siteHref } from '../site-url';
 
 const categoryTabs = ['すべて', 'アガベ', 'サボテン', '育成方法', 'その他', 'お知らせ'];
@@ -13,6 +13,22 @@ const varietiesByCategory: Record<string, string[]> = {
 };
 const otherVarietyKey = '__other__';
 const articlesPerPage = 12;
+const managementFamilyOrder = ['U', 'B', 'PD', 'PL', 'PX', 'S', 'X'];
+const managementFamilyLabels: Record<string, string> = {
+  U: 'U系', B: 'B系', PD: 'PD系', PL: 'PL系', PX: 'PX系', S: 'S系', X: 'X系',
+};
+
+const getManagementFamily = (id: string) => {
+  const { prefix } = getManagementNumberGroup(id);
+  if (prefix.startsWith('PD')) return 'PD';
+  if (prefix.startsWith('PL')) return 'PL';
+  if (prefix.startsWith('PX')) return 'PX';
+  if (prefix.startsWith('U')) return 'U';
+  if (prefix.startsWith('B')) return 'B';
+  if (prefix.startsWith('S')) return 'S';
+  if (prefix.startsWith('X')) return 'X';
+  return prefix;
+};
 
 const articleTime = (date: string) => new Date(`${date.replaceAll('.', '-')}T00:00:00`).getTime();
 const subscribeToLocation = (callback: () => void) => {
@@ -28,6 +44,7 @@ export default function JournalPage() {
   const activeCategoryParam = searchParams.get('category') ?? 'すべて';
   const activeCategory = categoryTabs.includes(activeCategoryParam) ? activeCategoryParam : 'すべて';
   const activeVarietyParam = searchParams.get('variety') ?? '';
+  const activeManagementFamilyParam = searchParams.get('managementFamily') ?? '';
   const activeManagementNumber = searchParams.get('management') ?? '';
   const sortModeParam = searchParams.get('sort') ?? 'newest';
   const sortMode = sortModeParam === 'oldest' || sortModeParam === 'popular' ? sortModeParam : 'newest';
@@ -42,7 +59,14 @@ export default function JournalPage() {
   const otherVarieties = varieties.filter((variety) => varietyCounts[variety] <= 5);
   const showVarietyStep = featuredVarieties.length > 0 && (featuredVarieties.length > 1 || otherVarieties.length > 0);
   const activeVariety = activeVarietyParam === otherVarietyKey || varieties.includes(activeVarietyParam) ? activeVarietyParam : '';
-  const managementNumbers = [...new Set(articles.filter((article) => article.tags?.includes('笹の雪')).flatMap((article) => article.managementNumbers ?? []))];
+  const managementNumbers = parentStocks.filter((stock) => stock.varietySlug === 'agave-victoriae-reginae').map((stock) => stock.id).sort(compareManagementNumberIds);
+  const managementFamilies = [...new Set(managementNumbers.map(getManagementFamily))].sort((first, second) => {
+    const firstIndex = managementFamilyOrder.indexOf(first);
+    const secondIndex = managementFamilyOrder.indexOf(second);
+    return (firstIndex === -1 ? Number.POSITIVE_INFINITY : firstIndex) - (secondIndex === -1 ? Number.POSITIVE_INFINITY : secondIndex) || first.localeCompare(second);
+  });
+  const activeManagementFamily = managementFamilies.includes(activeManagementFamilyParam) ? activeManagementFamilyParam : '';
+  const managementNumbersInFamily = managementNumbers.filter((number) => getManagementFamily(number) === activeManagementFamily);
   const filteredArticles = articles.filter((article) => {
     const inCategory = activeCategory === 'すべて' || article.categories?.includes(activeCategory) || article.category === activeCategory;
     const inVariety = !activeVariety || (activeVariety === otherVarietyKey ? otherVarieties.some((variety) => article.tags?.includes(variety)) : article.tags?.includes(activeVariety));
@@ -73,9 +97,10 @@ export default function JournalPage() {
       <header className="journal-list-heading"><p>ARTICLE ARCHIVE</p><h1>記事・お知らせ</h1></header>
       {activeParentStock && <div className="journal-parent-context"><div><p>RELATED TO PARENT STOCK</p><strong>{activeParentStock.id} 関連記事</strong><span>記事内の名称・管理番号をもとに自動抽出</span></div><a href={siteHref(`/mothers/${activeParentStock.id}`)}>← 親株詳細に戻る</a></div>}
       <div className="journal-browse" aria-label="記事を絞り込む">
-        <div className="journal-filter-step"><p>分類</p><div className="journal-category-tabs">{categoryTabs.map((category) => <a key={category} className={activeCategory === category ? 'is-active' : ''} href={journalHref({ category: category === 'すべて' ? null : category, variety: null, management: null, page: null })}>{category}</a>)}</div></div>
-        {showVarietyStep && <div className="journal-filter-step journal-subfilter"><p>品種を選ぶ</p><div className="journal-category-tabs journal-variety-tabs"><a className={!activeVariety ? 'is-active' : ''} href={journalHref({ variety: null, management: null, page: null })}>すべて</a>{featuredVarieties.map((variety) => <a key={variety} className={activeVariety === variety ? 'is-active' : ''} href={journalHref({ variety, management: null, page: null })}>{variety}</a>)}{otherVarieties.length > 0 && <a className={activeVariety === otherVarietyKey ? 'is-active' : ''} href={journalHref({ variety: otherVarietyKey, management: null, page: null })}>その他の品種</a>}</div></div>}
-        {activeVariety === '笹の雪' && <div className="journal-filter-step journal-management-filter"><p>笹の雪の管理番号</p><div className="journal-management-list"><a className={!activeManagementNumber ? 'is-active' : ''} href={journalHref({ management: null, page: null })}>すべて</a>{managementNumbers.map((number) => <a key={number} className={activeManagementNumber === number ? 'is-active' : ''} href={journalHref({ management: number, page: null })}>{number}</a>)}</div></div>}
+        <div className="journal-filter-step"><p>分類</p><div className="journal-category-tabs">{categoryTabs.map((category) => <a key={category} className={activeCategory === category ? 'is-active' : ''} href={journalHref({ category: category === 'すべて' ? null : category, variety: null, managementFamily: null, management: null, page: null })}>{category}</a>)}</div></div>
+        {showVarietyStep && <div className="journal-filter-step journal-subfilter"><p>品種を選ぶ</p><div className="journal-category-tabs journal-variety-tabs"><a className={!activeVariety ? 'is-active' : ''} href={journalHref({ variety: null, managementFamily: null, management: null, page: null })}>すべて</a>{featuredVarieties.map((variety) => <a key={variety} className={activeVariety === variety ? 'is-active' : ''} href={journalHref({ variety, managementFamily: null, management: null, page: null })}>{variety}</a>)}{otherVarieties.length > 0 && <a className={activeVariety === otherVarietyKey ? 'is-active' : ''} href={journalHref({ variety: otherVarietyKey, managementFamily: null, management: null, page: null })}>その他の品種</a>}</div></div>}
+        {activeVariety === '笹の雪' && <div className="journal-filter-step journal-management-family-filter"><p>系統を選ぶ</p><div className="journal-category-tabs journal-management-family-tabs"><a className={!activeManagementFamily ? 'is-active' : ''} href={journalHref({ managementFamily: null, management: null, page: null })}>すべて</a>{managementFamilies.map((family) => <a key={family} className={activeManagementFamily === family ? 'is-active' : ''} href={journalHref({ managementFamily: family, management: null, page: null })}>{managementFamilyLabels[family] ?? `${family}系`}</a>)}</div></div>}
+        {activeVariety === '笹の雪' && activeManagementFamily && <div className="journal-filter-step journal-management-filter"><p>{managementFamilyLabels[activeManagementFamily] ?? `${activeManagementFamily}系`}の管理番号</p><div className="journal-management-list">{managementNumbersInFamily.map((number) => <a key={number} className={activeManagementNumber === number ? 'is-active' : ''} href={journalHref({ management: number, page: null })}>{number}</a>)}</div></div>}
       </div>
       <div className="journal-list-tools"><p className="journal-result-count">{sortedArticles.length} 件の記事{sortedArticles.length > articlesPerPage && <span>（{currentPage} / {totalPages} ページ）</span>}</p><div className="journal-sort-control"><span>表示順</span><div className="journal-sort-tabs"><a className={sortMode === 'newest' ? 'is-active' : ''} href={journalHref({ sort: null, page: null })}>新しい順</a><a className={sortMode === 'oldest' ? 'is-active' : ''} href={journalHref({ sort: 'oldest', page: null })}>古い順</a><a className={sortMode === 'popular' ? 'is-active' : ''} href={journalHref({ sort: 'popular', page: null })}>人気</a></div></div></div>
       <div className="article-list">{displayedArticles.map((article) => <a className="article-row" href={siteHref(`/journal/${article.slug}${activeParentStock ? `?parent=${activeParentStock.id}` : ''}`)} key={article.slug}><img src={article.image} alt={article.title} /><div><p className="article-meta"><span>{article.category}</span>{article.date}</p><h2>{article.title}</h2><p>{article.excerpt}</p>{article.managementNumbers && article.managementNumbers.length > 0 && <p className="article-management">管理番号 <span>{article.managementNumbers.join(' / ')}</span></p>}<b>続きを読む →</b></div></a>)}</div>
