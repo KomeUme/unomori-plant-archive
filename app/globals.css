@@ -240,20 +240,25 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .journal-management-family-filter { animation:journal-filter-enter .32s .04s both cubic-bezier(.2,.8,.2,1); }
 
 @keyframes journal-filter-enter {
-  from { opacity:0; transform:translateY(-7px); }
-  to { opacity:1; transform:translateY(0); }
+  from { opacity:0; }
+  to { opacity:1; }
 }
 
 ::view-transition-old(journal-filters) { animation:journal-filter-fade-out .18s ease-out both; }
 ::view-transition-new(journal-filters) { animation:journal-filter-fade-in .28s cubic-bezier(.2,.8,.2,1) both; }
 
 @keyframes journal-filter-fade-out {
-  to { opacity:0; transform:translateY(-8px); }
+  to { opacity:0; }
 }
 
 @keyframes journal-filter-fade-in {
-  from { opacity:0; transform:translateY(8px); }
-  to { opacity:1; transform:translateY(0); }
+  from { opacity:0; }
+  to { opacity:1; }
+}
+
+@media (max-width:720px) {
+  .journal-category-tabs { flex-wrap:nowrap; gap:3px; }
+  .journal-category-tabs a { padding:8px 6px; font-size:10px; white-space:nowrap; }
 }
 
 @media (prefers-reduced-motion:reduce) {
