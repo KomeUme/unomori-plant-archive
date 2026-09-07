@@ -139,7 +139,7 @@ const provisionalParentStockPhotoIds = new Set(['PD-07', 'PD-13']);
 const createSasanoyukiParentStock = (id: string): ParentStock => ({
   id,
   varietySlug: 'agave-victoriae-reginae',
-  lineageName: '血統情報未登録',
+  lineageName: '笹の雪',
   origin: '由来未登録',
   managementStartedOn: null,
   ...(provisionalParentStockPhotoIds.has(id) ? { image: '/hero-unomori.jpg' } : {}),
@@ -170,7 +170,7 @@ export const parentStocks: ParentStock[] = [
   {
     id: 'UM-01',
     varietySlug: 'agave-victoriae-reginae',
-    lineageName: '笹の雪 / 実生株',
+    lineageName: '笹の雪',
     origin: '実生株',
     managementStartedOn: null,
     image: '/hero-unomori.jpg',
