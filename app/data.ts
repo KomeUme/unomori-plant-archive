@@ -84,6 +84,8 @@ export type ParentStock = {
   varietySlug: string;
   lineageName: string;
   origin: string;
+  /** YYYY.MM.DD。日が未確定の場合は YYYY.MM でも記録可能。 */
+  managementStartedOn: string | null;
   image?: string;
   selectionReason: string;
   /** null = 鉢別の現況はまだ未記録。空配列 = 現在は管理鉢がない。 */
@@ -139,6 +141,7 @@ const createSasanoyukiParentStock = (id: string): ParentStock => ({
   varietySlug: 'agave-victoriae-reginae',
   lineageName: '血統情報未登録',
   origin: '由来未登録',
+  managementStartedOn: null,
   ...(provisionalParentStockPhotoIds.has(id) ? { image: '/hero-unomori.jpg' } : {}),
   selectionReason: '特徴・選抜理由を記録予定です。',
   currentPots: null,
@@ -160,8 +163,9 @@ export const parentStocks: ParentStock[] = [
   {
     id: 'UM-01',
     varietySlug: 'agave-victoriae-reginae',
-    lineageName: '笹の雪 / 鵜ノ森管理株',
-    origin: '鵜ノ森管理株',
+    lineageName: '笹の雪 / 実生株',
+    origin: '実生株',
+    managementStartedOn: null,
     image: '/hero-unomori.jpg',
     selectionReason: '白い葉模様・肉厚な葉姿。葉の重なりと輪郭の個性を記録対象としています。',
     currentPots: [
