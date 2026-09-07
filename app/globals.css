@@ -273,15 +273,19 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .guide-grid article > p:not(.eyebrow) { grid-column:2; margin:0; line-height:1.75; }
 }
 
-.guide-more { margin-top:0; }
-.guide-more summary { display:inline-grid; width:15px; height:15px; place-items:center; color:#7d897f; cursor:pointer; font-size:0; line-height:1; list-style:none; opacity:.62; transition:opacity .18s ease; }
-.guide-more summary:hover { opacity:1; }
-.guide-more summary::-webkit-details-marker { display:none; }
-.guide-more summary::after { content:'＋'; font-size:13px; font-weight:400; }
-.guide-more[open] summary::after { content:'−'; }
-.guide-more > p { margin:0; color:var(--muted); font-size:11px; line-height:1.9; }
+.guide-more { margin:0; }
+.guide-more-toggle { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+.guide-more-preview,.guide-more > p { margin:0; color:var(--muted); font-size:11px; line-height:1.9; }
+.guide-more-preview { display:-webkit-box; overflow:hidden; -webkit-box-orient:vertical; -webkit-line-clamp:3; }
+.guide-more label { display:inline-flex; align-items:center; width:max-content; margin:5px 0 0; color:#7d897f; cursor:pointer; font-size:10px; font-weight:500; line-height:1.4; opacity:.74; transition:opacity .18s ease; }
+.guide-more label:hover { opacity:1; }
+.guide-more > p { display:none; }
+.guide-more-toggle:checked ~ .guide-more-preview { display:none; }
+.guide-more-toggle:checked ~ p { display:block; }
+.guide-more-toggle:checked ~ label { font-size:0; }
+.guide-more-toggle:checked ~ label::after { content:'閉じる'; font-size:10px; }
 
 @media (max-width:620px) {
-  .guide-more { grid-column:2; margin-top:0; }
-  .guide-more > p { font-size:11px; line-height:1.75; }
+  .guide-more { grid-column:2; }
+  .guide-more-preview,.guide-more > p { font-size:11px; line-height:1.75; }
 }
