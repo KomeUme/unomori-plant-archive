@@ -265,3 +265,11 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .journal-active-category,.journal-management-family-filter { animation:none; }
   ::view-transition-old(journal-filters),::view-transition-new(journal-filters) { animation:none; }
 }
+
+@media (max-width:620px) {
+  .guide-grid article { display:grid; grid-template-columns:26px minmax(0,1fr); column-gap:13px; padding:17px 16px 18px; }
+  .guide-point-number { grid-column:1; grid-row:1 / span 2; width:24px; height:24px; margin:2px 0 0; font-size:8px; }
+  .guide-grid article > .eyebrow { grid-column:2; margin:0 0 2px; }
+  .guide-grid h3 { grid-column:2; margin:0 0 8px; font-size:22px; line-height:1.2; }
+  .guide-grid article > p:not(.eyebrow) { grid-column:2; margin:0; line-height:1.75; }
+}
