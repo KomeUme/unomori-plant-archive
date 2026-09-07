@@ -1,5 +1,5 @@
 import { Footer, Header } from './components';
-import { articles, event } from './data';
+import { articles } from './data';
 import { siteHref } from './site-url';
 
 export default function Home() {
@@ -13,7 +13,7 @@ export default function Home() {
       </div>
       <div className="hero-image-wrap"><img src={siteHref('/hero-unomori.jpg')} alt="鵜ノ森で育てている植物" /><div className="image-caption"><span>001</span><p>Every plant has<br />its own story.</p></div><div className="hero-stamp">GROWN<br />WITH CARE<br /><b>●</b> TOKYO</div></div>
     </section>
-    <section className="event-section"><div className="event-card"><div><p className="eyebrow">{event.label}</p><span className="event-date">{event.date}</span><h2>{event.name}</h2></div><div className="event-meta"><p><b>PLACE</b>{event.place}</p><p><b>TIME</b>{event.time}</p><a href={siteHref('/journal/autumn-green-market')}>出店の詳細を見る →</a></div></div></section>
+    <section className="event-section"><div className="event-card event-card-pending"><div><p className="eyebrow">NEXT EVENT</p><h2>次回のイベント情報は未定です。</h2></div></div></section>
     <section className="section journal-section"><div className="section-heading"><div><p className="journal-overline">お知らせ・記事</p><h2>新着記事</h2></div></div><div className="article-list">{articles.slice(0, 4).map((article) => <a className="article-row" href={siteHref(`/journal/${article.slug}`)} key={article.slug}><img src={article.image} alt={article.title} /><div><p className="article-meta"><span>{article.category}</span>{article.date}</p><h3>{article.title}</h3><p>{article.excerpt}</p><b>続きを読む →</b></div></a>)}</div><div className="journal-cta-wrap"><a className="journal-cta" href={siteHref('/journal')}><span>VIEW ALL ARTICLES</span>記事一覧を見る <b>→</b></a></div></section>
     <Footer />
   </main>;
