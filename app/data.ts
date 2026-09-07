@@ -201,7 +201,7 @@ export const parentStocks: ParentStock[] = [
     acquisitionName: null,
     acquiredFrom: 'ビッグバザール',
     history: '実生株',
-    managementStartedOn: null,
+    managementStartedOn: '2024.09.08',
     image: '/hero-unomori.jpg',
     selectionReason: '白い葉模様・肉厚な葉姿。葉の重なりと輪郭の個性を記録対象としています。',
     currentPots: [
