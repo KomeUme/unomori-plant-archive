@@ -82,6 +82,8 @@ export type AnnualCloneRecord = {
 export type ParentStock = {
   id: string;
   varietySlug: string;
+  /** 笹の雪では、斑入りではない通常株を「アオ」として扱う。 */
+  foliageType: 'ao' | 'variegated';
   /** 管理者が管理のために付けた呼称。 */
   managementName: string | null;
   /** 購入・譲渡時に付いていた名称。 */
@@ -160,6 +162,7 @@ const sasanoyukiManagementNames: Record<string, string> = {
 const createSasanoyukiParentStock = (id: string): ParentStock => ({
   id,
   varietySlug: 'agave-victoriae-reginae',
+  foliageType: 'ao',
   managementName: sasanoyukiManagementNames[id] ?? null,
   acquisitionName: sasanoyukiAcquisitionNames[id] ?? null,
   acquiredFrom: null,
@@ -193,6 +196,7 @@ export const parentStocks: ParentStock[] = [
   {
     id: 'UM-01',
     varietySlug: 'agave-victoriae-reginae',
+    foliageType: 'ao',
     managementName: 'UM-01（実生選抜）',
     acquisitionName: null,
     acquiredFrom: 'ビッグバザール',

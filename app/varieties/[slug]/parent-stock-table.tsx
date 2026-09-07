@@ -19,6 +19,7 @@ import { useImageZoom } from '../../use-image-zoom';
 
 type SortKey = 'id' | 'currentHeldPlantCount' | 'breedingReadyPlantCount' | 'offsetsPerBreedingPlant';
 type SortDirection = 'asc' | 'desc';
+type FoliageType = ParentStock['foliageType'];
 
 const numberOrDash = (value: number | null) => value === null ? '—' : value;
 
@@ -61,9 +62,15 @@ const sortOptions: Array<{ key: SortKey; label: string }> = [
   { key: 'offsetsPerBreedingPlant', label: '1株あたり年間子株順' },
 ];
 
-export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
+const foliageOptions: Array<{ key: FoliageType; label: string }> = [
+  { key: 'ao', label: 'アオ' },
+  { key: 'variegated', label: '斑入り' },
+];
+
+export function ParentStockTable({ stocks, showFoliageFilter = false }: { stocks: ParentStock[]; showFoliageFilter?: boolean }) {
   const [sortKey, setSortKey] = useState<SortKey>('id');
   const [direction, setDirection] = useState<SortDirection>('asc');
+  const [activeFoliageType, setActiveFoliageType] = useState<FoliageType>('ao');
   const [isDragging, setIsDragging] = useState(false);
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const {
@@ -81,10 +88,15 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
   const tableWrapRef = useRef<HTMLDivElement>(null);
   const pointerStateRef = useRef<TablePointerState>({ pointerId: null, startX: 0, startY: 0, scrollLeft: 0, startedAt: 0, moved: false, stockId: null });
   const suppressRowClickRef = useRef(false);
+  const foliageCounts = useMemo(() => Object.fromEntries(foliageOptions.map(({ key }) => [key, stocks.filter((stock) => stock.foliageType === key).length])) as Record<FoliageType, number>, [stocks]);
+  const filteredStocks = useMemo(() => showFoliageFilter ? stocks.filter((stock) => stock.foliageType === activeFoliageType) : stocks, [activeFoliageType, showFoliageFilter, stocks]);
+  const tableAriaLabel = showFoliageFilter
+    ? `${activeFoliageType === 'ao' ? 'アオ' : '斑入り'}の親株一覧。横にスワイプして全項目を表示できます`
+    : '親株一覧。横にスワイプして全項目を表示できます';
 
   const groupedStocks = useMemo(() => {
     const groupMap = new Map<string, ParentStockGroup>();
-    stocks.forEach((stock) => {
+    filteredStocks.forEach((stock) => {
       const { primary, prefix } = getManagementNumberGroup(stock.id);
       const key = `${primary}-${prefix}`;
       const group = groupMap.get(key) ?? { primary, prefix, stocks: [] };
@@ -98,7 +110,7 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
       return result || compareManagementNumberIds(a.id, b.id);
     };
 
-    if (sortKey !== 'id') return [{ primary: null, prefix: null, stocks: [...stocks].sort(orderStocks) }];
+    if (sortKey !== 'id') return [{ primary: null, prefix: null, stocks: [...filteredStocks].sort(orderStocks) }];
 
     return [...groupMap.values()]
       .sort((a, b) => {
@@ -107,7 +119,7 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
         return aPriority - bPriority || (a.primary ?? '').localeCompare(b.primary ?? '') || (a.prefix ?? '').localeCompare(b.prefix ?? '');
       })
       .map((group) => ({ ...group, stocks: group.stocks.sort(orderStocks) }));
-  }, [direction, sortKey, stocks]);
+  }, [direction, filteredStocks, sortKey]);
 
   const imageStocks = useMemo(() => groupedStocks
     .flatMap((group) => group.stocks)
@@ -219,8 +231,9 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
   };
 
   return <>
+    {showFoliageFilter && <div className="parent-stock-category-filter" aria-label="笹の雪の分類を切り替える"><p>株の分類</p><div>{foliageOptions.map(({ key, label }) => <button type="button" key={key} className={activeFoliageType === key ? 'is-active' : ''} aria-pressed={activeFoliageType === key} onClick={() => setActiveFoliageType(key)}>{label}<span>{foliageCounts[key]}</span></button>)}</div></div>}
     <div className="sort-bar parent-stock-sort-bar" aria-label="親株一覧の並び替え"><p>表示順</p><div>{sortOptions.map(({ key, label }) => <button type="button" key={key} className={sortKey === key ? 'is-active' : ''} aria-pressed={sortKey === key} onClick={() => changeSort(key)}>{buttonLabel(key, label)}</button>)}</div></div>
-    <div ref={tableWrapRef} className={`pedigree-table-wrap${isDragging ? ' is-dragging' : ''}`} role="region" aria-label="親株一覧。横にスワイプして全項目を表示できます" onPointerDown={startTableDrag} onPointerMove={moveTableDrag} onPointerUp={finishTableDrag} onPointerCancel={finishTableDrag} onDragStart={(event) => event.preventDefault()}>
+    {filteredStocks.length ? <div ref={tableWrapRef} className={`pedigree-table-wrap${isDragging ? ' is-dragging' : ''}`} role="region" aria-label={tableAriaLabel} onPointerDown={startTableDrag} onPointerMove={moveTableDrag} onPointerUp={finishTableDrag} onPointerCancel={finishTableDrag} onDragStart={(event) => event.preventDefault()}>
       <table className="pedigree-table">
       <thead><tr>
         <th>親株ID</th>
@@ -268,7 +281,7 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
         </tr>)}
       </Fragment>)}</tbody>
       </table>
-    </div>
+    </div> : <div className="pedigree-empty"><p>{activeFoliageType === 'variegated' ? '斑入りの親株はまだ登録されていません。' : 'アオの親株はまだ登録されていません。'}</p></div>}
     {selectedImage ? <div className="image-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="image-modal-title" onPointerDown={(event) => { if (event.target === event.currentTarget) closeImage(); }}>
       <div className="image-modal-content">
         <button type="button" className="image-modal-close" aria-label="画像表示を閉じる" onClick={closeImage}>×</button>

@@ -41,7 +41,7 @@ export default async function VarietyDetailPage({ params }: PageProps) {
     </section>
     <section className="section pedigree-section">
       <div className="pedigree-notice"><span>記録の考え方</span><p>「管理鉢数」と「現在保有株数」は別に記録します。現在保有株数には、親株・独立株に加え、同じ鉢に付いた未分離子株も含まれます。鉢ごとの内訳と子株の発生年は、各親株の詳細で確認できます。</p></div>
-      {stocks.length ? <ParentStockTable stocks={stocks} /> : <div className="pedigree-empty"><p>親株データは準備中です。</p></div>}
+      {stocks.length ? <ParentStockTable stocks={stocks} showFoliageFilter={variety.slug === 'agave-victoriae-reginae'} /> : <div className="pedigree-empty"><p>親株データは準備中です。</p></div>}
     </section>
     <Footer />
   </main>;
