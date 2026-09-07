@@ -136,11 +136,23 @@ const blankAnnualHistory = (): AnnualCloneRecord[] => [
 
 const provisionalParentStockPhotoIds = new Set(['PD-07', 'PD-13']);
 
+const sasanoyukiOrigins: Record<string, string> = {
+  'PD-01': '最古参',
+  'PD-02': '児玉姫笹の雪',
+  'PD-05': 'No.02',
+  'PD-06': 'OG-1',
+  'PD-07': 'スペシャルゼブラ',
+  'PD-08': '高木氏',
+  'PD-11': 'GR児玉',
+  'PD-12': 'ベタ姫太ペンキ',
+  'PD-13': 'aタイプ',
+};
+
 const createSasanoyukiParentStock = (id: string): ParentStock => ({
   id,
   varietySlug: 'agave-victoriae-reginae',
   lineageName: '笹の雪',
-  origin: '由来未登録',
+  origin: sasanoyukiOrigins[id] ?? '由来未登録',
   managementStartedOn: null,
   ...(provisionalParentStockPhotoIds.has(id) ? { image: '/hero-unomori.jpg' } : {}),
   selectionReason: '特徴・選抜理由を記録予定です。',
@@ -159,7 +171,7 @@ const additionalSasanoyukiParentStockIds = [
 
 /**
  * 管理番号は先頭の文字を大分類、続く文字を小分類として扱います。
- * 例: P → PD / PL / PX。括弧内の記号はサブ分類として表示します。
+ * 例: P → PD / PL / PX。括弧内の記号は補助情報で、表示順には反映しません。
  * 新規の親株は同じ規則でIDを追加するだけで、一覧にも自動で分類されます。
  */
 export const parentStocks: ParentStock[] = [
