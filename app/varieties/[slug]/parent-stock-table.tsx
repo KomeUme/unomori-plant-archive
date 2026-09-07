@@ -231,8 +231,10 @@ export function ParentStockTable({ stocks, showFoliageFilter = false }: { stocks
   };
 
   return <>
-    {showFoliageFilter && <div className="parent-stock-category-filter" aria-label="笹の雪の分類を切り替える"><p>株の分類</p><div>{foliageOptions.map(({ key, label }) => <button type="button" key={key} className={activeFoliageType === key ? 'is-active' : ''} aria-pressed={activeFoliageType === key} onClick={() => setActiveFoliageType(key)}>{label}<span>{foliageCounts[key]}</span></button>)}</div></div>}
-    <div className="sort-bar parent-stock-sort-bar" aria-label="親株一覧の並び替え"><p>表示順</p><div>{sortOptions.map(({ key, label }) => <button type="button" key={key} className={sortKey === key ? 'is-active' : ''} aria-pressed={sortKey === key} onClick={() => changeSort(key)}>{buttonLabel(key, label)}</button>)}</div></div>
+    <div className="parent-stock-controls">
+      {showFoliageFilter && <div className="parent-stock-control-step" aria-label="笹の雪の分類を切り替える"><p>株の分類</p><div className="parent-stock-category-tabs">{foliageOptions.map(({ key, label }) => <button type="button" key={key} className={activeFoliageType === key ? 'is-active' : ''} aria-pressed={activeFoliageType === key} onClick={() => setActiveFoliageType(key)}>{label}<span>{foliageCounts[key]}</span></button>)}</div></div>}
+      <div className="parent-stock-control-step parent-stock-sort-control" aria-label="親株一覧の並び替え"><p>表示順</p><div className="parent-stock-sort-tabs">{sortOptions.map(({ key, label }) => <button type="button" key={key} className={sortKey === key ? 'is-active' : ''} aria-pressed={sortKey === key} onClick={() => changeSort(key)}>{buttonLabel(key, label)}</button>)}</div></div>
+    </div>
     {filteredStocks.length ? <div ref={tableWrapRef} className={`pedigree-table-wrap${isDragging ? ' is-dragging' : ''}`} role="region" aria-label={tableAriaLabel} onPointerDown={startTableDrag} onPointerMove={moveTableDrag} onPointerUp={finishTableDrag} onPointerCancel={finishTableDrag} onDragStart={(event) => event.preventDefault()}>
       <table className="pedigree-table">
       <thead><tr>
