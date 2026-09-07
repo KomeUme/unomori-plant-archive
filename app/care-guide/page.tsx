@@ -2,10 +2,15 @@ import { Footer, Header } from '../components';
 import { siteHref } from '../site-url';
 
 const guides = [
-  ['01', '光', '株の状態を見ながら、少しずつ日差しに慣らします。急に強い光へ移すことは避けます。'],
-  ['02', '風', '蒸れを避けるため、年間を通して緩やかな風を確保します。強風が続く場所では株を守ります。'],
-  ['03', '水', '用土の乾きと根の状態を確認してから与えます。季節ごとの気温と生育に合わせて間隔を調整します。'],
-  ['04', '土', '水はけと通気性を基本に、根の状態と置き場所に合わせて配合を選びます。'],
+  { no: '01', title: '光', body: '株の状態を見ながら、少しずつ日差しに慣らします。急に強い光へ移すことは避けます。' },
+  { no: '02', title: '風', body: '蒸れを避けるため、年間を通して緩やかな風を確保します。強風が続く場所では株を守ります。' },
+  { no: '03', title: '水', body: '用土の乾きと根の状態を確認してから与えます。季節ごとの気温と生育に合わせて間隔を調整します。' },
+  {
+    no: '04',
+    title: '土',
+    body: '園芸店やホームセンターの市販培養土は、手頃で扱いやすく、まずおすすめです。',
+    more: '最も望ましいのは、置き場所や水やりの頻度に合わせて基本用土を自分で配合することです。ただし、光・風・水の3つを適切に整えられれば、土の選択肢を極端に狭める必要はありません。土の配合は、まずこの3項目を把握してから見直すとよいでしょう。',
+  },
 ];
 
 const guideIntroduction = [
@@ -19,7 +24,7 @@ const guideIntroduction = [
 export default function CareGuidePage() {
   return <main><Header />
     <section className="page-hero"><p className="eyebrow">CARE GUIDE</p><h1>栽培ガイド</h1></section>
-    <section className="section guide-section page-section"><div className="guide-content"><div className="guide-introduction"><p className="eyebrow">BEFORE YOU BEGIN</p><h2>まず、植物の今の状態を見ます。</h2>{guideIntroduction.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div><figure className="agave-annual-graph"><picture><source media="(max-width: 720px)" srcSet={siteHref('/agave-annual-graph-mobile.jpg')} /><img src={siteHref('/agave-annual-graph-desktop.jpg')} alt="アガベの年間育成グラフ。月ごとの育成状態、水やり量、植え替え適期を示す。" /></picture></figure><div className="annual-graph-note"><p className="eyebrow">ABOUT THE SEASONS</p><p>日本では四季によって、気温・日照・降水量・湿度が大きく変わります。こうした短期間の環境変化は、植物が原生地で経験する条件とは異なることがあります。栽培では日本の季節に合わせながら、原生地に近い光・風・水・温度のバランスを、株の状態に応じて整えることが大切です。</p></div><div className="guide-points-heading"><p className="eyebrow">CARE POINTS</p><h2>栽培におけるポイント</h2><p className="guide-priority">優先順位　光 <span>＞</span> 風 <span>＞</span> 水 <span>＞</span> 土</p></div><div className="guide-grid">{guides.map(([no, title, body]) => <article key={no}><span className="guide-point-number">{no}</span><h3>{title}</h3><p>{body}</p></article>)}</div><div className="season-note"><p className="eyebrow">THIS MONTH / AUGUST</p><b>夏の管理メモ</b><p>強い西日と葉焼けに注意。水やり後は株元に風を通し、夜間の蒸れを避けます。</p></div></div></section>
+    <section className="section guide-section page-section"><div className="guide-content"><div className="guide-introduction"><p className="eyebrow">BEFORE YOU BEGIN</p><h2>まず、植物の今の状態を見ます。</h2>{guideIntroduction.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div><figure className="agave-annual-graph"><picture><source media="(max-width: 720px)" srcSet={siteHref('/agave-annual-graph-mobile.jpg')} /><img src={siteHref('/agave-annual-graph-desktop.jpg')} alt="アガベの年間育成グラフ。月ごとの育成状態、水やり量、植え替え適期を示す。" /></picture></figure><div className="annual-graph-note"><p className="eyebrow">ABOUT THE SEASONS</p><p>日本では四季によって、気温・日照・降水量・湿度が大きく変わります。こうした短期間の環境変化は、植物が原生地で経験する条件とは異なることがあります。栽培では日本の季節に合わせながら、原生地に近い光・風・水・温度のバランスを、株の状態に応じて整えることが大切です。</p></div><div className="guide-points-heading"><p className="eyebrow">CARE POINTS</p><h2>栽培におけるポイント</h2><p className="guide-priority">優先順位　光 <span>＞</span> 風 <span>＞</span> 水 <span>＞</span> 土</p></div><div className="guide-grid">{guides.map(({ no, title, body, more }) => <article key={no}><span className="guide-point-number">{no}</span><h3>{title}</h3><p>{body}</p>{more && <details className="guide-more"><summary>続きを読む</summary><p>{more}</p></details>}</article>)}</div><div className="season-note"><p className="eyebrow">THIS MONTH / AUGUST</p><b>夏の管理メモ</b><p>強い西日と葉焼けに注意。水やり後は株元に風を通し、夜間の蒸れを避けます。</p></div></div></section>
     <Footer />
   </main>;
 }

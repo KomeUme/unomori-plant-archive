@@ -272,3 +272,15 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .guide-grid h3 { grid-column:2; margin:0 0 8px; font-size:22px; line-height:1.2; }
   .guide-grid article > p:not(.eyebrow) { grid-column:2; margin:0; line-height:1.75; }
 }
+
+.guide-more { margin-top:12px; }
+.guide-more summary { display:inline-flex; align-items:center; gap:5px; color:var(--green); cursor:pointer; font-size:11px; font-weight:700; list-style:none; }
+.guide-more summary::-webkit-details-marker { display:none; }
+.guide-more summary::after { content:'＋'; font-size:14px; font-weight:400; }
+.guide-more[open] summary::after { content:'−'; }
+.guide-more > p { margin:11px 0 0; color:var(--muted); font-size:11px; line-height:1.9; }
+
+@media (max-width:620px) {
+  .guide-more { grid-column:2; margin-top:10px; }
+  .guide-more > p { font-size:11px; line-height:1.75; }
+}
