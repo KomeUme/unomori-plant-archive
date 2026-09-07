@@ -234,7 +234,7 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
         <th>備考</th>
       </tr></thead>
       <tbody>{groupedStocks.map((group) => <Fragment key={`${group.primary}-${group.prefix}`}>
-        {group.primary && group.prefix ? <tr className="management-group-row"><th colSpan={13} scope="rowgroup"><span>{group.primary}系</span><b>管理記号 {group.prefix}</b><em>{group.stocks.length}株</em></th></tr> : null}
+        {group.primary && group.prefix ? <tr className="management-group-row"><th colSpan={13} scope="rowgroup"><span>{group.primary}系</span>{group.prefix !== group.primary ? <b>管理記号 {group.prefix}</b> : null}<em>{group.stocks.length}株</em></th></tr> : null}
         {group.stocks.map((stock) => <tr key={stock.id} data-stock-id={stock.id} className="stock-table-row" role="link" tabIndex={0} aria-label={`${stock.id}の詳細を開く`} onClick={(event) => {
           if (suppressRowClickRef.current) {
             event.preventDefault();

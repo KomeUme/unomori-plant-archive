@@ -205,7 +205,9 @@ export type ManagementNumberGroup = {
 };
 
 export function getManagementNumberGroup(id: string): ManagementNumberGroup {
-  const [prefix = id] = id.split('-');
+  const [rawPrefix = id] = id.split('-');
+  // 括弧内は記録上の補助情報であり、一覧での分類・表示順には用いない。
+  const prefix = rawPrefix.replace(/\([^)]*\)/g, '');
   return { primary: prefix.slice(0, 1), prefix };
 }
 
