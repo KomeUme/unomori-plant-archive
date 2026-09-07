@@ -268,11 +268,8 @@ export function ParentStockTable({ stocks, showFoliageFilter = false }: { stocks
         }} onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openDetail(stock.id); }
         }}>
-          <td><span className="stock-id-link">{stock.id}</span></td>
-          <td>
-            {stock.managementName && <span className="stock-name-entry"><span className="stock-name-label">管理名</span><strong>{stock.managementName}</strong></span>}
-            {stock.acquisitionName && <span className="stock-name-entry"><span className="stock-name-label">入手時名</span><strong>{stock.acquisitionName}</strong></span>}
-            {!stock.managementName && !stock.acquisitionName && <strong>—</strong>}
+          <td className="stock-id-cell"><span className="stock-id-link">{stock.id}</span>{(stock.managementName || stock.acquisitionName) && <span className="stock-id-metadata">{stock.managementName && <span className="stock-name-entry"><span className="stock-name-label">管理名</span><strong>{stock.managementName}</strong></span>}{stock.acquisitionName && <span className="stock-name-entry"><span className="stock-name-label">入手時名</span><strong>{stock.acquisitionName}</strong></span>}</span>}</td>
+          <td className="stock-name-cell">
             <span className="cell-subtext">入手元：{stock.acquiredFrom ?? '未記録'}</span>
           </td>
           <td>{stock.image ? <button type="button" className="stock-table-image" aria-label={`${stock.id}の親株写真を拡大表示`} onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); openImage(stock); }} onDoubleClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}><img src={siteHref(stock.image)} alt={`${stock.id} 親株写真`} /><span className="stock-table-zoom" aria-hidden="true">⌕</span></button> : <span className="image-pending">未登録</span>}</td>
