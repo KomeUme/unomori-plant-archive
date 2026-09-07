@@ -195,7 +195,7 @@ export const parentStocks: ParentStock[] = [
     varietySlug: 'agave-victoriae-reginae',
     managementName: 'UM-01（実生選抜）',
     acquisitionName: null,
-    acquiredFrom: null,
+    acquiredFrom: 'ビッグバザール',
     history: '実生株',
     managementStartedOn: null,
     image: '/hero-unomori.jpg',
