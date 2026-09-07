@@ -12,6 +12,8 @@ const varietiesByCategory: Record<string, string[]> = {
   その他: ['アロエ', 'ラウリンゼ', 'ボンバックス'],
 };
 const otherVarietyKey = '__other__';
+const initialArticleCount = 12;
+const additionalArticleCount = 10;
 
 const articleTime = (date: string) => new Date(`${date.replaceAll('.', '-')}T00:00:00`).getTime();
 const subscribeToLocation = () => () => {};
@@ -23,6 +25,7 @@ export default function JournalPage() {
   const [activeVariety, setActiveVariety] = useState('');
   const [activeManagementNumber, setActiveManagementNumber] = useState('');
   const [sortMode, setSortMode] = useState<'newest' | 'oldest' | 'popular'>('newest');
+  const [visibleArticleCount, setVisibleArticleCount] = useState(initialArticleCount);
 
   const parentStockIdFromLocation = useSyncExternalStore(subscribeToLocation, getParentStockIdFromLocation, getServerParentStockId);
   const activeParentStockId = getParentStockById(parentStockIdFromLocation)?.id ?? '';
@@ -42,18 +45,30 @@ export default function JournalPage() {
     const inParentStock = !activeParentStock || relatedArticleSlugs.has(article.slug);
     return inCategory && inVariety && inManagementNumber && inParentStock;
   });
-  const displayedArticles = [...filteredArticles].sort((first, second) => {
+  const sortedArticles = [...filteredArticles].sort((first, second) => {
     if (sortMode === 'popular') return (second.popularity ?? 0) - (first.popularity ?? 0) || articleTime(second.date) - articleTime(first.date);
     return sortMode === 'newest' ? articleTime(second.date) - articleTime(first.date) : articleTime(first.date) - articleTime(second.date);
   });
+  const displayedArticles = sortedArticles.slice(0, visibleArticleCount);
+  const remainingArticleCount = Math.max(0, sortedArticles.length - displayedArticles.length);
   const selectCategory = (category: string) => {
     setActiveCategory(category);
     setActiveVariety('');
     setActiveManagementNumber('');
+    setVisibleArticleCount(initialArticleCount);
   };
   const selectVariety = (variety: string) => {
     setActiveVariety(variety);
     setActiveManagementNumber('');
+    setVisibleArticleCount(initialArticleCount);
+  };
+  const selectManagementNumber = (managementNumber: string) => {
+    setActiveManagementNumber(managementNumber);
+    setVisibleArticleCount(initialArticleCount);
+  };
+  const selectSortMode = (mode: 'newest' | 'oldest' | 'popular') => {
+    setSortMode(mode);
+    setVisibleArticleCount(initialArticleCount);
   };
 
   return <main><Header />
@@ -63,11 +78,12 @@ export default function JournalPage() {
       <div className="journal-browse" aria-label="記事を絞り込む">
         <div className="journal-filter-step"><p>分類</p><div className="journal-category-tabs">{categoryTabs.map((category) => <button type="button" key={category} className={activeCategory === category ? 'is-active' : ''} onClick={() => selectCategory(category)}>{category}</button>)}</div></div>
         {showVarietyStep && <div className="journal-filter-step journal-subfilter"><p>品種を選ぶ</p><div className="journal-category-tabs journal-variety-tabs"><button type="button" className={!activeVariety ? 'is-active' : ''} onClick={() => selectVariety('')}>すべて</button>{featuredVarieties.map((variety) => <button type="button" key={variety} className={activeVariety === variety ? 'is-active' : ''} onClick={() => selectVariety(variety)}>{variety}</button>)}{otherVarieties.length > 0 && <button type="button" className={activeVariety === otherVarietyKey ? 'is-active' : ''} onClick={() => selectVariety(otherVarietyKey)}>その他の品種</button>}</div></div>}
-        {activeVariety === '笹の雪' && <div className="journal-filter-step journal-management-filter"><p>笹の雪の管理番号</p><div className="journal-management-list"><button type="button" className={!activeManagementNumber ? 'is-active' : ''} onClick={() => setActiveManagementNumber('')}>すべて</button>{managementNumbers.map((number) => <button type="button" key={number} className={activeManagementNumber === number ? 'is-active' : ''} onClick={() => setActiveManagementNumber(number)}>{number}</button>)}</div></div>}
+        {activeVariety === '笹の雪' && <div className="journal-filter-step journal-management-filter"><p>笹の雪の管理番号</p><div className="journal-management-list"><button type="button" className={!activeManagementNumber ? 'is-active' : ''} onClick={() => selectManagementNumber('')}>すべて</button>{managementNumbers.map((number) => <button type="button" key={number} className={activeManagementNumber === number ? 'is-active' : ''} onClick={() => selectManagementNumber(number)}>{number}</button>)}</div></div>}
       </div>
-      <div className="journal-list-tools"><p className="journal-result-count">{displayedArticles.length} 件の記事</p><div className="journal-sort-control"><span>表示順</span><div className="journal-sort-tabs"><button type="button" className={sortMode === 'newest' ? 'is-active' : ''} onClick={() => setSortMode('newest')}>新しい順</button><button type="button" className={sortMode === 'oldest' ? 'is-active' : ''} onClick={() => setSortMode('oldest')}>古い順</button><button type="button" className={sortMode === 'popular' ? 'is-active' : ''} onClick={() => setSortMode('popular')}>人気</button></div></div></div>
+      <div className="journal-list-tools"><p className="journal-result-count">{sortedArticles.length} 件の記事{sortedArticles.length > displayedArticles.length && <span>（{displayedArticles.length} 件を表示中）</span>}</p><div className="journal-sort-control"><span>表示順</span><div className="journal-sort-tabs"><button type="button" className={sortMode === 'newest' ? 'is-active' : ''} onClick={() => selectSortMode('newest')}>新しい順</button><button type="button" className={sortMode === 'oldest' ? 'is-active' : ''} onClick={() => selectSortMode('oldest')}>古い順</button><button type="button" className={sortMode === 'popular' ? 'is-active' : ''} onClick={() => selectSortMode('popular')}>人気</button></div></div></div>
       <div className="article-list">{displayedArticles.map((article) => <a className="article-row" href={siteHref(`/journal/${article.slug}${activeParentStock ? `?parent=${activeParentStock.id}` : ''}`)} key={article.slug}><img src={article.image} alt={article.title} /><div><p className="article-meta"><span>{article.category}</span>{article.date}</p><h2>{article.title}</h2><p>{article.excerpt}</p>{article.managementNumbers && article.managementNumbers.length > 0 && <p className="article-management">管理番号 <span>{article.managementNumbers.join(' / ')}</span></p>}<b>続きを読む →</b></div></a>)}</div>
-      {!displayedArticles.length && <p className="journal-empty">該当する記事はありません。</p>}
+      {remainingArticleCount > 0 && <div className="journal-load-more"><button type="button" onClick={() => setVisibleArticleCount((count) => count + additionalArticleCount)}>もっと見る <span>あと {remainingArticleCount} 件</span></button></div>}
+      {!sortedArticles.length && <p className="journal-empty">該当する記事はありません。</p>}
     </section>
     <Footer />
   </main>;
