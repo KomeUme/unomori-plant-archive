@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useSyncExternalStore } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 import { Footer, Header } from '../components';
 import { articles, getParentStockById, getRelatedArticlesForParentStock } from '../data';
 import { siteHref } from '../site-url';
@@ -12,22 +12,26 @@ const varietiesByCategory: Record<string, string[]> = {
   その他: ['アロエ', 'ラウリンゼ', 'ボンバックス'],
 };
 const otherVarietyKey = '__other__';
-const initialArticleCount = 12;
-const additionalArticleCount = 10;
+const articlesPerPage = 12;
 
 const articleTime = (date: string) => new Date(`${date.replaceAll('.', '-')}T00:00:00`).getTime();
-const subscribeToLocation = () => () => {};
-const getParentStockIdFromLocation = () => new URLSearchParams(window.location.search).get('parent') ?? '';
-const getServerParentStockId = () => '';
+const subscribeToLocation = (callback: () => void) => {
+  window.addEventListener('popstate', callback);
+  return () => window.removeEventListener('popstate', callback);
+};
+const getLocationSearch = () => window.location.search;
+const getServerLocationSearch = () => '';
 
 export default function JournalPage() {
-  const [activeCategory, setActiveCategory] = useState('すべて');
-  const [activeVariety, setActiveVariety] = useState('');
-  const [activeManagementNumber, setActiveManagementNumber] = useState('');
-  const [sortMode, setSortMode] = useState<'newest' | 'oldest' | 'popular'>('newest');
-  const [visibleArticleCount, setVisibleArticleCount] = useState(initialArticleCount);
-
-  const parentStockIdFromLocation = useSyncExternalStore(subscribeToLocation, getParentStockIdFromLocation, getServerParentStockId);
+  const locationSearch = useSyncExternalStore(subscribeToLocation, getLocationSearch, getServerLocationSearch);
+  const searchParams = useMemo(() => new URLSearchParams(locationSearch), [locationSearch]);
+  const activeCategoryParam = searchParams.get('category') ?? 'すべて';
+  const activeCategory = categoryTabs.includes(activeCategoryParam) ? activeCategoryParam : 'すべて';
+  const activeVarietyParam = searchParams.get('variety') ?? '';
+  const activeManagementNumber = searchParams.get('management') ?? '';
+  const sortModeParam = searchParams.get('sort') ?? 'newest';
+  const sortMode = sortModeParam === 'oldest' || sortModeParam === 'popular' ? sortModeParam : 'newest';
+  const parentStockIdFromLocation = searchParams.get('parent') ?? '';
   const activeParentStockId = getParentStockById(parentStockIdFromLocation)?.id ?? '';
 
   const activeParentStock = getParentStockById(activeParentStockId);
@@ -37,6 +41,7 @@ export default function JournalPage() {
   const featuredVarieties = varieties.filter((variety) => varietyCounts[variety] > 5);
   const otherVarieties = varieties.filter((variety) => varietyCounts[variety] <= 5);
   const showVarietyStep = featuredVarieties.length > 0 && (featuredVarieties.length > 1 || otherVarieties.length > 0);
+  const activeVariety = activeVarietyParam === otherVarietyKey || varieties.includes(activeVarietyParam) ? activeVarietyParam : '';
   const managementNumbers = [...new Set(articles.filter((article) => article.tags?.includes('笹の雪')).flatMap((article) => article.managementNumbers ?? []))];
   const filteredArticles = articles.filter((article) => {
     const inCategory = activeCategory === 'すべて' || article.categories?.includes(activeCategory) || article.category === activeCategory;
@@ -49,26 +54,18 @@ export default function JournalPage() {
     if (sortMode === 'popular') return (second.popularity ?? 0) - (first.popularity ?? 0) || articleTime(second.date) - articleTime(first.date);
     return sortMode === 'newest' ? articleTime(second.date) - articleTime(first.date) : articleTime(first.date) - articleTime(second.date);
   });
-  const displayedArticles = sortedArticles.slice(0, visibleArticleCount);
-  const remainingArticleCount = Math.max(0, sortedArticles.length - displayedArticles.length);
-  const selectCategory = (category: string) => {
-    setActiveCategory(category);
-    setActiveVariety('');
-    setActiveManagementNumber('');
-    setVisibleArticleCount(initialArticleCount);
-  };
-  const selectVariety = (variety: string) => {
-    setActiveVariety(variety);
-    setActiveManagementNumber('');
-    setVisibleArticleCount(initialArticleCount);
-  };
-  const selectManagementNumber = (managementNumber: string) => {
-    setActiveManagementNumber(managementNumber);
-    setVisibleArticleCount(initialArticleCount);
-  };
-  const selectSortMode = (mode: 'newest' | 'oldest' | 'popular') => {
-    setSortMode(mode);
-    setVisibleArticleCount(initialArticleCount);
+  const totalPages = Math.max(1, Math.ceil(sortedArticles.length / articlesPerPage));
+  const pageParam = Number.parseInt(searchParams.get('page') ?? '1', 10);
+  const currentPage = Math.min(Math.max(Number.isFinite(pageParam) ? pageParam : 1, 1), totalPages);
+  const displayedArticles = sortedArticles.slice((currentPage - 1) * articlesPerPage, currentPage * articlesPerPage);
+  const journalHref = (updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(locationSearch);
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    });
+    const query = params.toString();
+    return siteHref(`/journal/${query ? `?${query}` : ''}`);
   };
 
   return <main><Header />
@@ -76,13 +73,13 @@ export default function JournalPage() {
       <header className="journal-list-heading"><p>ARTICLE ARCHIVE</p><h1>記事・お知らせ</h1></header>
       {activeParentStock && <div className="journal-parent-context"><div><p>RELATED TO PARENT STOCK</p><strong>{activeParentStock.id} 関連記事</strong><span>記事内の名称・管理番号をもとに自動抽出</span></div><a href={siteHref(`/mothers/${activeParentStock.id}`)}>← 親株詳細に戻る</a></div>}
       <div className="journal-browse" aria-label="記事を絞り込む">
-        <div className="journal-filter-step"><p>分類</p><div className="journal-category-tabs">{categoryTabs.map((category) => <button type="button" key={category} className={activeCategory === category ? 'is-active' : ''} onClick={() => selectCategory(category)}>{category}</button>)}</div></div>
-        {showVarietyStep && <div className="journal-filter-step journal-subfilter"><p>品種を選ぶ</p><div className="journal-category-tabs journal-variety-tabs"><button type="button" className={!activeVariety ? 'is-active' : ''} onClick={() => selectVariety('')}>すべて</button>{featuredVarieties.map((variety) => <button type="button" key={variety} className={activeVariety === variety ? 'is-active' : ''} onClick={() => selectVariety(variety)}>{variety}</button>)}{otherVarieties.length > 0 && <button type="button" className={activeVariety === otherVarietyKey ? 'is-active' : ''} onClick={() => selectVariety(otherVarietyKey)}>その他の品種</button>}</div></div>}
-        {activeVariety === '笹の雪' && <div className="journal-filter-step journal-management-filter"><p>笹の雪の管理番号</p><div className="journal-management-list"><button type="button" className={!activeManagementNumber ? 'is-active' : ''} onClick={() => selectManagementNumber('')}>すべて</button>{managementNumbers.map((number) => <button type="button" key={number} className={activeManagementNumber === number ? 'is-active' : ''} onClick={() => selectManagementNumber(number)}>{number}</button>)}</div></div>}
+        <div className="journal-filter-step"><p>分類</p><div className="journal-category-tabs">{categoryTabs.map((category) => <a key={category} className={activeCategory === category ? 'is-active' : ''} href={journalHref({ category: category === 'すべて' ? null : category, variety: null, management: null, page: null })}>{category}</a>)}</div></div>
+        {showVarietyStep && <div className="journal-filter-step journal-subfilter"><p>品種を選ぶ</p><div className="journal-category-tabs journal-variety-tabs"><a className={!activeVariety ? 'is-active' : ''} href={journalHref({ variety: null, management: null, page: null })}>すべて</a>{featuredVarieties.map((variety) => <a key={variety} className={activeVariety === variety ? 'is-active' : ''} href={journalHref({ variety, management: null, page: null })}>{variety}</a>)}{otherVarieties.length > 0 && <a className={activeVariety === otherVarietyKey ? 'is-active' : ''} href={journalHref({ variety: otherVarietyKey, management: null, page: null })}>その他の品種</a>}</div></div>}
+        {activeVariety === '笹の雪' && <div className="journal-filter-step journal-management-filter"><p>笹の雪の管理番号</p><div className="journal-management-list"><a className={!activeManagementNumber ? 'is-active' : ''} href={journalHref({ management: null, page: null })}>すべて</a>{managementNumbers.map((number) => <a key={number} className={activeManagementNumber === number ? 'is-active' : ''} href={journalHref({ management: number, page: null })}>{number}</a>)}</div></div>}
       </div>
-      <div className="journal-list-tools"><p className="journal-result-count">{sortedArticles.length} 件の記事{sortedArticles.length > displayedArticles.length && <span>（{displayedArticles.length} 件を表示中）</span>}</p><div className="journal-sort-control"><span>表示順</span><div className="journal-sort-tabs"><button type="button" className={sortMode === 'newest' ? 'is-active' : ''} onClick={() => selectSortMode('newest')}>新しい順</button><button type="button" className={sortMode === 'oldest' ? 'is-active' : ''} onClick={() => selectSortMode('oldest')}>古い順</button><button type="button" className={sortMode === 'popular' ? 'is-active' : ''} onClick={() => selectSortMode('popular')}>人気</button></div></div></div>
+      <div className="journal-list-tools"><p className="journal-result-count">{sortedArticles.length} 件の記事{sortedArticles.length > articlesPerPage && <span>（{currentPage} / {totalPages} ページ）</span>}</p><div className="journal-sort-control"><span>表示順</span><div className="journal-sort-tabs"><a className={sortMode === 'newest' ? 'is-active' : ''} href={journalHref({ sort: null, page: null })}>新しい順</a><a className={sortMode === 'oldest' ? 'is-active' : ''} href={journalHref({ sort: 'oldest', page: null })}>古い順</a><a className={sortMode === 'popular' ? 'is-active' : ''} href={journalHref({ sort: 'popular', page: null })}>人気</a></div></div></div>
       <div className="article-list">{displayedArticles.map((article) => <a className="article-row" href={siteHref(`/journal/${article.slug}${activeParentStock ? `?parent=${activeParentStock.id}` : ''}`)} key={article.slug}><img src={article.image} alt={article.title} /><div><p className="article-meta"><span>{article.category}</span>{article.date}</p><h2>{article.title}</h2><p>{article.excerpt}</p>{article.managementNumbers && article.managementNumbers.length > 0 && <p className="article-management">管理番号 <span>{article.managementNumbers.join(' / ')}</span></p>}<b>続きを読む →</b></div></a>)}</div>
-      {remainingArticleCount > 0 && <div className="journal-load-more"><button type="button" onClick={() => setVisibleArticleCount((count) => count + additionalArticleCount)}>もっと見る <span>あと {remainingArticleCount} 件</span></button></div>}
+      {totalPages > 1 && <nav className="journal-pagination" aria-label="記事一覧のページ"><a className={currentPage === 1 ? 'is-disabled' : ''} aria-disabled={currentPage === 1} href={currentPage === 1 ? undefined : journalHref({ page: String(currentPage - 1) })}>← 前へ</a><div>{Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => <a key={page} className={page === currentPage ? 'is-active' : ''} aria-current={page === currentPage ? 'page' : undefined} href={journalHref({ page: page === 1 ? null : String(page) })}>{page}</a>)}</div><a className={currentPage === totalPages ? 'is-disabled' : ''} aria-disabled={currentPage === totalPages} href={currentPage === totalPages ? undefined : journalHref({ page: String(currentPage + 1) })}>次へ →</a></nav>}
       {!sortedArticles.length && <p className="journal-empty">該当する記事はありません。</p>}
     </section>
     <Footer />
