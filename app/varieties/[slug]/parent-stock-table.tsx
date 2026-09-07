@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 import {
+  compareManagementNumberIds,
   getCurrentAttachedOffsetCount,
   getCurrentBreedingReadyPlantCount,
   getCurrentHeldPlantCount,
@@ -92,9 +93,9 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
     });
 
     const orderStocks = (a: ParentStock, b: ParentStock) => {
-      if (sortKey === 'id') return direction === 'asc' ? a.id.localeCompare(b.id) : b.id.localeCompare(a.id);
+      if (sortKey === 'id') return direction === 'asc' ? compareManagementNumberIds(a.id, b.id) : compareManagementNumberIds(b.id, a.id);
       const result = compare(valueForSort(a, sortKey), valueForSort(b, sortKey), direction);
-      return result || a.id.localeCompare(b.id);
+      return result || compareManagementNumberIds(a.id, b.id);
     };
 
     if (sortKey !== 'id') return [{ primary: null, prefix: null, stocks: [...stocks].sort(orderStocks) }];

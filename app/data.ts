@@ -211,6 +211,22 @@ export function getManagementNumberGroup(id: string): ManagementNumberGroup {
   return { primary: prefix.slice(0, 1), prefix };
 }
 
+/**
+ * 例: B-01 / B(PD)-02 / B(PD)-03 は、すべて B系の番号順として扱う。
+ * PD / PL / PX のように括弧外にある英字は、分類・並び順に反映する。
+ */
+export function compareManagementNumberIds(first: string, second: string) {
+  const firstGroup = getManagementNumberGroup(first);
+  const secondGroup = getManagementNumberGroup(second);
+  const prefixComparison = firstGroup.prefix.localeCompare(secondGroup.prefix);
+  if (prefixComparison !== 0) return prefixComparison;
+
+  const firstNumber = Number(first.match(/-(\d+)$/)?.[1] ?? Number.POSITIVE_INFINITY);
+  const secondNumber = Number(second.match(/-(\d+)$/)?.[1] ?? Number.POSITIVE_INFINITY);
+  if (firstNumber !== secondNumber) return firstNumber - secondNumber;
+  return first.localeCompare(second);
+}
+
 export function getVarietyBySlug(slug: string) {
   return varieties.find((variety) => variety.slug === slug);
 }

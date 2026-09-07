@@ -33,14 +33,10 @@ export default async function VarietyDetailPage({ params }: PageProps) {
         <h1>{variety.name}</h1>
         <p className="variety-botanical">{variety.botanicalName}</p>
         <div className="variety-ledger-intro">
-          <p className="eyebrow">PARENT STOCK / CLONE LEDGER</p>
-          <h2>親株・血統一覧</h2>
-          <p>管理番号は先頭のアルファベットを大分類、続く文字を小分類としてまとめています。各区分内では、列見出しを押して並び替えできます。</p>
+          <div className="variety-ledger-heading"><h2>親株・血統一覧</h2><span>親株ID {stocks.length}件</span></div>
+          <p>管理番号で親株を一覧化しています。括弧内の記号は補助情報として扱い、並び順には反映しません。</p>
         </div>
-        <div className="variety-detail-hero-meta">
-          <div className="variety-detail-hero-metric"><span>親株数</span><b>{stocks.length}</b></div>
-          <a className="variety-detail-back-link" href={siteHref('/mother-plants')}><span aria-hidden="true">←</span> 品種一覧へ戻る</a>
-        </div>
+        <a className="variety-detail-back-link" href={siteHref('/mother-plants')}><span aria-hidden="true">←</span> 品種一覧へ戻る</a>
       </div>
     </section>
     <section className="section pedigree-section">
