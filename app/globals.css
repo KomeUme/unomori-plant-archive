@@ -273,19 +273,19 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .guide-grid article > p:not(.eyebrow) { grid-column:2; margin:0; line-height:1.75; }
 }
 
-.guide-more { margin:0; }
 .guide-more-toggle { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
-.guide-more-preview,.guide-more > p { margin:0; color:var(--muted); font-size:11px; line-height:1.9; }
+.guide-grid h3 { display:flex; align-items:baseline; gap:10px; }
+.guide-more-label { color:#7d897f; cursor:pointer; font-family:Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif; font-size:10px; font-weight:500; line-height:1.4; opacity:.74; transition:opacity .18s ease; }
+.guide-more-label:hover { opacity:1; }
+.guide-more-preview,.guide-more-full { margin:0; color:var(--muted); font-size:11px; line-height:1.9; }
 .guide-more-preview { display:-webkit-box; overflow:hidden; -webkit-box-orient:vertical; -webkit-line-clamp:3; }
-.guide-more label { display:inline-flex; align-items:center; width:max-content; margin:5px 0 0; color:#7d897f; cursor:pointer; font-size:10px; font-weight:500; line-height:1.4; opacity:.74; transition:opacity .18s ease; }
-.guide-more label:hover { opacity:1; }
-.guide-more > p { display:none; }
+.guide-more-full { display:none; }
 .guide-more-toggle:checked ~ .guide-more-preview { display:none; }
-.guide-more-toggle:checked ~ p { display:block; }
-.guide-more-toggle:checked ~ label { font-size:0; }
-.guide-more-toggle:checked ~ label::after { content:'閉じる'; font-size:10px; }
+.guide-more-toggle:checked ~ .guide-more-full { display:block; }
+.guide-more-toggle:checked ~ h3 .guide-more-label { font-size:0; }
+.guide-more-toggle:checked ~ h3 .guide-more-label::after { content:'閉じる'; font-size:10px; }
 
 @media (max-width:620px) {
-  .guide-more { grid-column:2; }
-  .guide-more-preview,.guide-more > p { font-size:11px; line-height:1.75; }
+  .guide-grid h3 { gap:8px; }
+  .guide-more-preview,.guide-more-full { grid-column:2; font-size:11px; line-height:1.75; }
 }
