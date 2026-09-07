@@ -16,7 +16,7 @@ const guideIntroduction = [
 
 export default function CareGuidePage() {
   return <main><Header />
-    <section className="page-hero"><p className="eyebrow">CARE GUIDE</p><h1>栽培ガイド</h1><p>植物の状態と環境を見ながら、無理のない管理を考えるための目安です。</p></section>
+    <section className="page-hero"><p className="eyebrow">CARE GUIDE</p><h1>栽培ガイド</h1></section>
     <section className="section guide-section page-section"><div className="guide-introduction"><p className="eyebrow">BEFORE YOU BEGIN</p><h2>まず、植物の今の状態を見ます。</h2>{guideIntroduction.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div><div className="guide-grid">{guides.map(([no, title, en, body]) => <article key={no}><span>{no}</span><div className="guide-icon" aria-hidden="true">{no === '01' ? '◐' : no === '02' ? '♢' : '≋'}</div><p className="eyebrow">{en}</p><h3>{title}を整える</h3><p>{body}</p></article>)}</div><div className="season-note"><p className="eyebrow">THIS MONTH / AUGUST</p><b>夏の管理メモ</b><p>強い西日と葉焼けに注意。水やり後は株元に風を通し、夜間の蒸れを避けます。</p></div></section>
     <Footer />
   </main>;
