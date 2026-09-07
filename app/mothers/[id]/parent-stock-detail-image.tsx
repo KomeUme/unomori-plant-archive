@@ -7,11 +7,11 @@ import { useImageZoom } from '../../use-image-zoom';
 
 type ParentStockDetailImageProps = {
   image: string;
-  acquisitionName: string | null;
+  displayName: string | null;
   stockId: string;
 };
 
-export function ParentStockDetailImage({ image, acquisitionName, stockId }: ParentStockDetailImageProps) {
+export function ParentStockDetailImage({ image, displayName, stockId }: ParentStockDetailImageProps) {
   const [isOpen, setIsOpen] = useState(false);
   const {
     zoom,
@@ -51,7 +51,7 @@ export function ParentStockDetailImage({ image, acquisitionName, stockId }: Pare
 
   return <>
     <button className="stock-detail-image-button" type="button" aria-label={`${stockId}の親株写真を拡大表示`} onClick={openImage}>
-      <img src={siteHref(image)} alt={`${stockId}${acquisitionName ? ` ${acquisitionName}` : ''} 親株写真`} />
+      <img src={siteHref(image)} alt={`${stockId}${displayName ? ` ${displayName}` : ''} 親株写真`} />
       <span className="stock-detail-image-zoom" aria-hidden="true">⌕</span>
     </button>
     {isOpen && typeof document !== 'undefined' ? createPortal(

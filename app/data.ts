@@ -82,6 +82,8 @@ export type AnnualCloneRecord = {
 export type ParentStock = {
   id: string;
   varietySlug: string;
+  /** 管理者が管理のために付けた呼称。 */
+  managementName: string | null;
   /** 購入・譲渡時に付いていた名称。 */
   acquisitionName: string | null;
   /** 購入・譲渡元。 */
@@ -141,7 +143,6 @@ const blankAnnualHistory = (): AnnualCloneRecord[] => [
 const provisionalParentStockPhotoIds = new Set(['PD-07', 'PD-13']);
 
 const sasanoyukiAcquisitionNames: Record<string, string> = {
-  'PD-01': '最古参',
   'PD-02': '児玉姫笹の雪',
   'PD-05': 'No.02',
   'PD-06': 'OG-1',
@@ -152,9 +153,14 @@ const sasanoyukiAcquisitionNames: Record<string, string> = {
   'PD-13': 'aタイプ',
 };
 
+const sasanoyukiManagementNames: Record<string, string> = {
+  'PD-01': '最古参',
+};
+
 const createSasanoyukiParentStock = (id: string): ParentStock => ({
   id,
   varietySlug: 'agave-victoriae-reginae',
+  managementName: sasanoyukiManagementNames[id] ?? null,
   acquisitionName: sasanoyukiAcquisitionNames[id] ?? null,
   acquiredFrom: null,
   history: null,
@@ -187,7 +193,8 @@ export const parentStocks: ParentStock[] = [
   {
     id: 'UM-01',
     varietySlug: 'agave-victoriae-reginae',
-    acquisitionName: 'UM-01（実生選抜）',
+    managementName: 'UM-01（実生選抜）',
+    acquisitionName: null,
     acquiredFrom: null,
     history: '実生株',
     managementStartedOn: null,

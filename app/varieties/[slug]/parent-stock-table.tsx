@@ -224,7 +224,7 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
       <table className="pedigree-table">
       <thead><tr>
         <th>親株ID</th>
-        <th>入手時の名前・入手元</th><th>親株写真</th><th>特徴・選抜理由</th>
+        <th>名称・入手元</th><th>親株写真</th><th>特徴・選抜理由</th>
         <th>現在保有株数</th>
         <th>管理鉢数</th>
         <th>主株・独立株</th><th>未分離子株</th>
@@ -254,7 +254,12 @@ export function ParentStockTable({ stocks }: { stocks: ParentStock[] }) {
           if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openDetail(stock.id); }
         }}>
           <td><span className="stock-id-link">{stock.id}</span></td>
-          <td><strong>{stock.acquisitionName ?? '—'}</strong><span className="cell-subtext">入手元：{stock.acquiredFrom ?? '未記録'}</span></td>
+          <td>
+            {stock.managementName && <span className="stock-name-entry"><span className="stock-name-label">管理名</span><strong>{stock.managementName}</strong></span>}
+            {stock.acquisitionName && <span className="stock-name-entry"><span className="stock-name-label">入手時名</span><strong>{stock.acquisitionName}</strong></span>}
+            {!stock.managementName && !stock.acquisitionName && <strong>—</strong>}
+            <span className="cell-subtext">入手元：{stock.acquiredFrom ?? '未記録'}</span>
+          </td>
           <td>{stock.image ? <button type="button" className="stock-table-image" aria-label={`${stock.id}の親株写真を拡大表示`} onPointerDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); openImage(stock); }} onDoubleClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}><img src={siteHref(stock.image)} alt={`${stock.id} 親株写真`} /><span className="stock-table-zoom" aria-hidden="true">⌕</span></button> : <span className="image-pending">未登録</span>}</td>
           <td className="selection-cell">{stock.selectionReason}</td>
           <td>{numberOrDash(getCurrentHeldPlantCount(stock))}</td><td>{numberOrDash(getManagedPotCount(stock))}</td><td>{numberOrDash(getCurrentRootedPlantCount(stock))}</td><td>{numberOrDash(getCurrentAttachedOffsetCount(stock))}</td>
