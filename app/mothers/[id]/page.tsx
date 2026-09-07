@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { id } = await params;
   const stock = getParentStockById(id);
   if (!stock) return { title: '親株が見つかりません｜鵜ノ森' };
-  return { title: `${stock.id}｜親株・血統管理｜鵜ノ森`, description: `${stock.id} ${stock.lineageName}の親株・クローン年次記録。` };
+  return { title: `${stock.id}｜親株・血統管理｜鵜ノ森`, description: `${stock.id}の親株・クローン年次記録。` };
 }
 
 export default async function MotherDetailPage({ params }: PageProps) {
@@ -46,8 +46,8 @@ export default async function MotherDetailPage({ params }: PageProps) {
     <section className="stock-detail-top">
       <a className="back-link" href={siteHref(`/varieties/${variety.slug}`)}>← {variety.name}の親株一覧へ戻る</a>
       <div className="stock-detail-card">
-        <div className="stock-detail-image">{stock.image ? <ParentStockDetailImage image={stock.image} lineageName={stock.lineageName} stockId={stock.id} /> : <span>PHOTO<br />PENDING</span>}</div>
-        <div className="stock-detail-copy"><p className="eyebrow">PARENT STOCK / {variety.name}</p><strong>{stock.id}</strong><h1>{stock.lineageName}</h1><div className="stock-provenance"><p>由来：{stock.origin}</p><p>管理開始日：{stock.managementStartedOn ?? '未記録'}</p></div><p>{stock.selectionReason}</p><dl><div><dt>品種</dt><dd>{variety.name}</dd></div><div><dt>学名・系統</dt><dd>{variety.botanicalName}</dd></div><div><dt>備考</dt><dd>{stock.notes}</dd></div></dl></div>
+        <div className="stock-detail-image">{stock.image ? <ParentStockDetailImage image={stock.image} acquisitionName={stock.acquisitionName} stockId={stock.id} /> : <span>PHOTO<br />PENDING</span>}</div>
+        <div className="stock-detail-copy"><p className="eyebrow">PARENT STOCK / {variety.name}</p><strong>{stock.id}</strong>{stock.acquisitionName && <h1>{stock.acquisitionName}</h1>}<div className="stock-provenance"><p>入手元：{stock.acquiredFrom ?? '未記録'}</p><p>来歴：{stock.history ?? '未記録'}</p><p>管理開始日：{stock.managementStartedOn ?? '未記録'}</p></div><p>{stock.selectionReason}</p><dl><div><dt>学名</dt><dd>{variety.botanicalName}</dd></div><div><dt>備考</dt><dd>{stock.notes}</dd></div></dl></div>
       </div>
     </section>
     <section className="section stock-ledger-section">

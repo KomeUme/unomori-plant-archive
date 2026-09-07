@@ -82,8 +82,12 @@ export type AnnualCloneRecord = {
 export type ParentStock = {
   id: string;
   varietySlug: string;
-  lineageName: string;
-  origin: string;
+  /** 購入・譲渡時に付いていた名称。 */
+  acquisitionName: string | null;
+  /** 購入・譲渡元。 */
+  acquiredFrom: string | null;
+  /** 実生・選抜など、入手元とは別に残したい来歴。 */
+  history: string | null;
   /** YYYY.MM.DD。日が未確定の場合は YYYY.MM でも記録可能。 */
   managementStartedOn: string | null;
   image?: string;
@@ -136,7 +140,7 @@ const blankAnnualHistory = (): AnnualCloneRecord[] => [
 
 const provisionalParentStockPhotoIds = new Set(['PD-07', 'PD-13']);
 
-const sasanoyukiOrigins: Record<string, string> = {
+const sasanoyukiAcquisitionNames: Record<string, string> = {
   'PD-01': '最古参',
   'PD-02': '児玉姫笹の雪',
   'PD-05': 'No.02',
@@ -151,8 +155,9 @@ const sasanoyukiOrigins: Record<string, string> = {
 const createSasanoyukiParentStock = (id: string): ParentStock => ({
   id,
   varietySlug: 'agave-victoriae-reginae',
-  lineageName: '笹の雪',
-  origin: sasanoyukiOrigins[id] ?? '由来未登録',
+  acquisitionName: sasanoyukiAcquisitionNames[id] ?? null,
+  acquiredFrom: null,
+  history: null,
   managementStartedOn: null,
   ...(provisionalParentStockPhotoIds.has(id) ? { image: '/hero-unomori.jpg' } : {}),
   selectionReason: '特徴・選抜理由を記録予定です。',
@@ -182,8 +187,9 @@ export const parentStocks: ParentStock[] = [
   {
     id: 'UM-01',
     varietySlug: 'agave-victoriae-reginae',
-    lineageName: '笹の雪',
-    origin: '実生株',
+    acquisitionName: null,
+    acquiredFrom: null,
+    history: '実生株',
     managementStartedOn: null,
     image: '/hero-unomori.jpg',
     selectionReason: '白い葉模様・肉厚な葉姿。葉の重なりと輪郭の個性を記録対象としています。',
