@@ -9,6 +9,7 @@ import {
   getManagedPotCount,
   getParentStockById,
   getPotSizeSummary,
+  getRelatedArticlesForParentStock,
   getVarietyBySlug,
   parentStocks,
   potSizes,
@@ -41,6 +42,7 @@ export default async function MotherDetailPage({ params }: PageProps) {
   if (!stock) notFound();
   const variety = getVarietyBySlug(stock.varietySlug);
   if (!variety) notFound();
+  const relatedArticles = getRelatedArticlesForParentStock(stock);
 
   return <main><Header />
     <section className="stock-detail-top">
@@ -59,6 +61,11 @@ export default async function MotherDetailPage({ params }: PageProps) {
       <div className="annual-table-wrap"><table className="annual-history-table"><thead><tr><th>年</th><th>年初保有株</th><th>年初未分離子株</th><th>新規子株発生</th><th>分離・回収</th><th>販売</th><th>枯死</th><th>年末保有株</th><th>年末未分離子株</th></tr></thead><tbody>{stock.annualHistory.slice().sort((a, b) => b.year - a.year).map((record) => <tr key={record.year}><th>{record.year}</th><td>{displayNumber(record.openingPlantCount)}</td><td>{displayNumber(record.openingAttachedOffsetCount)}</td><td>{displayNumber(record.newOffsetCount)}</td><td>{displayNumber(record.separatedOffsetCount)}</td><td>{displayNumber(record.soldCount)}</td><td>{displayNumber(record.deaths)}</td><td>{displayNumber(record.closingPlantCount)}</td><td>{displayNumber(record.closingAttachedOffsetCount)}</td></tr>)}</tbody></table></div>
       <p className="history-footnote">※ 「分離・回収」は親株から外して別鉢へ移した数で、保有株数を減らす処理ではありません。年末保有株数は、年初保有株数＋新規子株発生－販売－枯死で確認します。</p>
     </section>
+    {relatedArticles.length > 0 && <section className="section related-articles-section">
+      <div className="related-articles-heading"><div><p className="eyebrow">RELATED ARTICLES</p><h2>関連記事</h2></div><p>管理番号・管理名・入手時名をもとに、記事内の語彙から自動で抽出しています。</p></div>
+      <div className="article-list related-article-list">{relatedArticles.slice(0, 3).map((article) => <a className="article-row" href={siteHref(`/journal/${article.slug}?parent=${stock.id}`)} key={article.slug}><img src={article.image} alt={article.title} /><div><p className="article-meta"><span>{article.category}</span>{article.date}</p><h2>{article.title}</h2><p>{article.excerpt}</p><b>記事を読む →</b></div></a>)}</div>
+      <div className="related-articles-more"><a href={siteHref(`/journal?parent=${stock.id}`)}>{stock.id} の関連記事をすべて見る <b>→</b></a></div>
+    </section>}
     <Footer />
   </main>;
 }

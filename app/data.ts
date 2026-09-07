@@ -349,6 +349,11 @@ export type Article = {
   categories?: readonly string[];
   tags?: readonly string[];
   managementNumbers?: readonly string[];
+  /**
+   * 将来的に記事側で親株を明示指定したい場合に使うID。
+   * 未設定の既存記事は、本文・タイトル・タグ等の語彙から関連を自動判定します。
+   */
+  parentStockIds?: readonly string[];
   popularity?: number;
 };
 
@@ -374,6 +379,64 @@ const siteArticles: Article[] = [
 ];
 
 export const articles: Article[] = [...instagramArticles, ...siteArticles];
+
+const normalizeArticleText = (value: string) => value.normalize('NFKC').toUpperCase();
+const compactIdentifier = (value: string) => normalizeArticleText(value).replace(/[\s\-‐‑‒–—―_()（）「」『』“”"']/g, '');
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const identifierSeparator = '[\\s\\-‐‑‒–—―_()（）「」『』]*';
+
+const getArticleSearchText = (article: Article) => [
+  article.title,
+  article.excerpt,
+  article.body,
+  article.category,
+  ...(article.categories ?? []),
+  ...(article.tags ?? []),
+  ...(article.managementNumbers ?? []),
+].join('\n');
+
+/**
+ * ハイフンや全角記号の有無を吸収しつつ、英数字IDの途中一致は避けます。
+ * 例: X-01 は PX-01 の一部としては扱いません。
+ */
+const includesIdentifier = (source: string, identifier: string) => {
+  const tokens = normalizeArticleText(identifier).match(/[A-Z]+|\d+/g) ?? [];
+  if (!tokens.length) return false;
+  const pattern = tokens.map(escapeRegExp).join(identifierSeparator);
+  return new RegExp(`(^|[^A-Z0-9])${pattern}(?![A-Z0-9])`).test(normalizeArticleText(source));
+};
+
+const includesParentName = (source: string, name: string | null) => {
+  if (!name) return false;
+  const normalizedName = compactIdentifier(name);
+  return normalizedName.length >= 3 && compactIdentifier(source).includes(normalizedName);
+};
+
+export function isArticleRelatedToParentStock(article: Article, stock: ParentStock) {
+  if (article.parentStockIds) return article.parentStockIds.includes(stock.id);
+
+  const searchText = getArticleSearchText(article);
+  const directlyMentionedParentStocks = parentStocks
+    .filter((parentStock) => includesIdentifier(searchText, parentStock.id));
+  const longestDirectIdentifierLength = Math.max(...directlyMentionedParentStocks.map((parentStock) => compactIdentifier(parentStock.id).length), 0);
+  const directlyMentionedParentStockIds = directlyMentionedParentStocks
+    .filter((parentStock) => compactIdentifier(parentStock.id).length === longestDirectIdentifierLength)
+    .map((parentStock) => parentStock.id);
+
+  // 記事内に管理番号があれば、その番号の親株を最優先します。
+  // 例: 「OG-1（PL-04）」のような表記を、OG-1 名称側の別親株へ誤って紐付けません。
+  if (directlyMentionedParentStockIds.length > 0) return directlyMentionedParentStockIds.includes(stock.id);
+
+  return includesParentName(searchText, stock.managementName)
+    || includesParentName(searchText, stock.acquisitionName);
+}
+
+export function getRelatedArticlesForParentStock(stock: ParentStock) {
+  return articles
+    .filter((article) => isArticleRelatedToParentStock(article, stock))
+    .slice()
+    .sort((first, second) => new Date(`${second.date.replaceAll('.', '-')}T00:00:00`).getTime() - new Date(`${first.date.replaceAll('.', '-')}T00:00:00`).getTime());
+}
 
 export const event = {
   label: 'NEXT EVENT', date: '2026.09.14 SUN', name: 'GREEN MARKET 2026 AUTUMN', place: '代々木公園 ケヤキ並木', time: '10:00 – 16:00',

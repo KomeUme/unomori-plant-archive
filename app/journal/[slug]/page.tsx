@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Footer, Header } from '../../components';
 import { articles } from '../../data';
-import { siteHref } from '../../site-url';
+import { JournalDetailBackLink } from './journal-detail-back-link';
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -24,7 +24,7 @@ export default async function JournalDetailPage({ params }: PageProps) {
   const article = articles.find((item) => item.slug === slug);
   if (!article) notFound();
   return <main><Header />
-    <article className="journal-detail"><a className="back-link" href={siteHref('/journal')}>← 記事一覧へ戻る</a><p className="article-meta"><span>{article.category}</span>{article.date}</p><h1>{article.title}</h1><p className="journal-lead">{article.excerpt}</p>{article.tags && <div className="article-tags detail-tags" aria-label="記事の分類タグ">{article.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>}<img src={article.image} alt={article.title} /><div className="journal-body"><p>{article.body}</p>{article.sourceUrl && <a className="instagram-source" href={article.sourceUrl} target="_blank" rel="noreferrer">Instagramの投稿を見る ↗</a>}</div></article>
+    <article className="journal-detail"><JournalDetailBackLink /><p className="article-meta"><span>{article.category}</span>{article.date}</p><h1>{article.title}</h1><p className="journal-lead">{article.excerpt}</p>{article.tags && <div className="article-tags detail-tags" aria-label="記事の分類タグ">{article.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>}<img src={article.image} alt={article.title} /><div className="journal-body"><p>{article.body}</p>{article.sourceUrl && <a className="instagram-source" href={article.sourceUrl} target="_blank" rel="noreferrer">Instagramの投稿を見る ↗</a>}</div></article>
     <Footer />
   </main>;
 }
