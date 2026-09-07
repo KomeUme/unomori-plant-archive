@@ -28,12 +28,22 @@ export default async function VarietyDetailPage({ params }: PageProps) {
 
   return <main><Header />
     <section className="variety-detail-hero">
-      <div><p className="eyebrow">VARIETY / PEDIGREE</p><h1>{variety.name}</h1><p className="variety-botanical">{variety.botanicalName}</p><p className="variety-description">{variety.description}</p></div>
-      <div className="variety-detail-hero-metric"><span>REGISTERED PARENTS</span><b>{stocks.length}</b><p>親株・血統の記録</p></div>
+      <div className="variety-detail-hero-content">
+        <p className="eyebrow">VARIETY / PEDIGREE</p>
+        <h1>{variety.name}</h1>
+        <p className="variety-botanical">{variety.botanicalName}</p>
+        <div className="variety-ledger-intro">
+          <p className="eyebrow">PARENT STOCK / CLONE LEDGER</p>
+          <h2>親株・血統一覧</h2>
+          <p>管理番号は先頭のアルファベットを大分類、続く文字を小分類としてまとめています。各区分内では、列見出しを押して並び替えできます。</p>
+        </div>
+        <div className="variety-detail-hero-meta">
+          <div className="variety-detail-hero-metric"><span>親株数</span><b>{stocks.length}</b></div>
+          <a className="variety-detail-back-link" href={siteHref('/mother-plants')}><span aria-hidden="true">←</span> 品種一覧へ戻る</a>
+        </div>
+      </div>
     </section>
     <section className="section pedigree-section">
-      <a className="pedigree-back-link" href={siteHref('/mother-plants')}><span aria-hidden="true">←</span> 品種一覧へ戻る</a>
-      <div className="section-heading"><div><p className="eyebrow">PARENT STOCK / CLONE LEDGER</p><h2>親株・血統一覧</h2></div><p>管理番号は先頭のアルファベットを大分類、続く文字を小分類としてまとめています。各区分内では、列見出しを押して並び替えできます。</p></div>
       <div className="pedigree-notice"><span>記録の考え方</span><p>「管理鉢数」と「現在保有株数」は別に記録します。現在保有株数には、親株・独立株に加え、同じ鉢に付いた未分離子株も含まれます。鉢ごとの内訳と子株の発生年は、各親株の詳細で確認できます。</p></div>
       {stocks.length ? <ParentStockTable stocks={stocks} /> : <div className="pedigree-empty"><p>親株データは準備中です。</p></div>}
     </section>
