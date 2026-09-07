@@ -187,7 +187,7 @@ export const parentStocks: ParentStock[] = [
   {
     id: 'UM-01',
     varietySlug: 'agave-victoriae-reginae',
-    acquisitionName: null,
+    acquisitionName: 'UM-01（実生選抜）',
     acquiredFrom: null,
     history: '実生株',
     managementStartedOn: null,
