@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useSyncExternalStore } from 'react';
+import { type MouseEvent, useMemo, useSyncExternalStore } from 'react';
 import { Footer, Header } from '../components';
 import { articles, compareManagementNumberIds, getManagementNumberGroup, getParentStockById, getRelatedArticlesForParentStock, parentStocks } from '../data';
 import { siteHref } from '../site-url';
@@ -92,13 +92,24 @@ export default function JournalPage() {
     const query = params.toString();
     return siteHref(`/journal/${query ? `?${query}` : ''}`);
   };
+  const handleFilterNavigation = (event: MouseEvent<HTMLDivElement>) => {
+    const link = (event.target as HTMLElement).closest('a');
+    if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    const updateLocation = () => {
+      window.history.pushState({}, '', link.href);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    };
+    if ('startViewTransition' in document) document.startViewTransition(updateLocation);
+    else updateLocation();
+  };
 
   return <main><Header />
     <section className="section journal-section page-section">
       <header className="journal-list-heading"><p>ARTICLE ARCHIVE</p><h1>記事・お知らせ</h1></header>
       {activeParentStock && <div className="journal-parent-context"><div><p>RELATED TO PARENT STOCK</p><strong>{activeParentStock.id} 関連記事</strong><span>記事内の名称・管理番号をもとに自動抽出</span></div><a href={siteHref(`/mothers/${activeParentStock.id}`)}>← 親株詳細に戻る</a></div>}
-      <div className="journal-browse" aria-label="記事を絞り込む">
-        {isVictoriaReginaeSelection ? <div className="journal-active-category"><p>分類</p><div><span>アガベ</span><a href={journalHref({ category: null, variety: null, managementFamily: null, management: null, page: null })} aria-label="アガベの分類を解除する">×</a></div></div> : <><div className="journal-filter-step"><p>分類</p><div className="journal-category-tabs">{categoryTabs.map((category) => <a key={category} className={activeCategory === category ? 'is-active' : ''} href={journalHref({ category: category === 'すべて' ? null : category, variety: null, managementFamily: null, management: null, page: null })}>{category}</a>)}</div></div>{showVarietyStep && <div className="journal-filter-step journal-subfilter"><p>品種を選ぶ</p><div className="journal-category-tabs journal-variety-tabs"><a className={!activeVariety ? 'is-active' : ''} href={journalHref({ variety: null, managementFamily: null, management: null, page: null })}>すべて</a>{featuredVarieties.map((variety) => <a key={variety} className={activeVariety === variety ? 'is-active' : ''} href={journalHref({ variety, managementFamily: null, management: null, page: null })}>{variety}</a>)}{otherVarieties.length > 0 && <a className={activeVariety === otherVarietyKey ? 'is-active' : ''} href={journalHref({ variety: otherVarietyKey, managementFamily: null, management: null, page: null })}>その他の品種</a>}</div></div>}</>}
+      <div className="journal-browse" aria-label="記事を絞り込む" onClick={handleFilterNavigation}>
+        {isVictoriaReginaeSelection ? <div className="journal-active-category"><p>分類</p><div><span>笹の雪</span><a href={journalHref({ category: null, variety: null, managementFamily: null, management: null, page: null })} aria-label="笹の雪の絞り込みを解除する">×</a></div></div> : <><div className="journal-filter-step"><p>分類</p><div className="journal-category-tabs">{categoryTabs.map((category) => <a key={category} className={activeCategory === category ? 'is-active' : ''} href={journalHref({ category: category === 'すべて' ? null : category, variety: null, managementFamily: null, management: null, page: null })}>{category}</a>)}</div></div>{showVarietyStep && <div className="journal-filter-step journal-subfilter"><p>品種を選ぶ</p><div className="journal-category-tabs journal-variety-tabs"><a className={!activeVariety ? 'is-active' : ''} href={journalHref({ variety: null, managementFamily: null, management: null, page: null })}>すべて</a>{featuredVarieties.map((variety) => <a key={variety} className={activeVariety === variety ? 'is-active' : ''} href={journalHref({ variety, managementFamily: null, management: null, page: null })}>{variety}</a>)}{otherVarieties.length > 0 && <a className={activeVariety === otherVarietyKey ? 'is-active' : ''} href={journalHref({ variety: otherVarietyKey, managementFamily: null, management: null, page: null })}>その他の品種</a>}</div></div>}</>}
         {isVictoriaReginaeSelection && <div className="journal-filter-step journal-management-family-filter"><p>笹の雪の系統を選ぶ</p><div className="journal-category-tabs journal-management-family-tabs">{managementFamilies.map((family) => <a key={family} className={activeManagementFamily === family ? 'is-active' : ''} href={journalHref({ managementFamily: family, management: null, page: null })}>{managementFamilyLabels[family] ?? `${family}系`}</a>)}</div></div>}
         {isVictoriaReginaeSelection && activeManagementFamily && <div className="journal-filter-step journal-management-filter"><p>{managementFamilyLabels[activeManagementFamily] ?? `${activeManagementFamily}系`}の管理番号</p><div className="journal-management-list">{managementNumbersInFamily.map((number) => <a key={number} className={activeManagementNumber === number ? 'is-active' : ''} href={journalHref({ management: number, page: null })}>{number}</a>)}</div></div>}
       </div>

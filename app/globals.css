@@ -233,3 +233,30 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 @media (max-width:360px) {
   .current-ledger-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
+
+/* Journal filter transitions */
+.journal-browse { view-transition-name:journal-filters; }
+.journal-active-category { animation:journal-filter-enter .28s cubic-bezier(.2,.8,.2,1); }
+.journal-management-family-filter { animation:journal-filter-enter .32s .04s both cubic-bezier(.2,.8,.2,1); }
+
+@keyframes journal-filter-enter {
+  from { opacity:0; transform:translateY(-7px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+::view-transition-old(journal-filters) { animation:journal-filter-fade-out .18s ease-out both; }
+::view-transition-new(journal-filters) { animation:journal-filter-fade-in .28s cubic-bezier(.2,.8,.2,1) both; }
+
+@keyframes journal-filter-fade-out {
+  to { opacity:0; transform:translateY(-8px); }
+}
+
+@keyframes journal-filter-fade-in {
+  from { opacity:0; transform:translateY(8px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .journal-active-category,.journal-management-family-filter { animation:none; }
+  ::view-transition-old(journal-filters),::view-transition-new(journal-filters) { animation:none; }
+}
