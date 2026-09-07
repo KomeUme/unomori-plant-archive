@@ -26,6 +26,10 @@ function getServerTranslationSearch() {
   return '';
 }
 
+export function InstagramIcon() {
+  return <svg className="instagram-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.7" r=".75" fill="currentColor" stroke="none" /></svg>;
+}
+
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const translationSearch = useSyncExternalStore(subscribeToHeaderTranslation, getClientTranslationSearch, getServerTranslationSearch);
@@ -40,5 +44,5 @@ export function Header() {
 }
 
 export function Footer() {
-  return <footer className="site-footer"><div className="footer-main"><div><a className="brand footer-brand" href={siteHref('/')}><span className="brand-mark">鵜</span><span>鵜ノ森 <em>PLANT ARCHIVE</em></span></a><p className="footer-description">笹の雪を中心に、一株ずつの時間を記録する植物アーカイブ。</p></div><div className="footer-message"><p className="eyebrow">UNOMORI / PLANT ARCHIVE</p><p>植物と、その時間を記録する。</p></div><div className="footer-contact"><p>CONTACT</p><a href="https://www.instagram.com/me_happy1121/" target="_blank" rel="noreferrer">Instagram&nbsp; @me_happy1121</a><a href="mailto:komeume1121@gmail.com">komeume1121@gmail.com</a></div><nav className="footer-nav" aria-label="フッターナビゲーション"><p>EXPLORE</p><div><a href={siteHref('/journal')}>記事一覧</a><a href={siteHref('/records')}>成長記録</a><a href={siteHref('/mother-plants')}>品種</a><a href={siteHref('/care-guide')}>栽培ガイド</a><a href={siteHref('/shop')}>販売情報</a><a href={siteHref('/about')}>ABOUT</a></div></nav></div><small>© 2026 鵜ノ森</small></footer>;
+  return <footer className="site-footer"><div className="footer-main"><div><a className="brand footer-brand" href={siteHref('/')}><span className="brand-mark">鵜</span><span>鵜ノ森 <em>PLANT ARCHIVE</em></span></a><p className="footer-description">笹の雪を中心に、一株ずつの時間を記録する植物アーカイブ。</p></div><div className="footer-message"><p className="eyebrow">UNOMORI / PLANT ARCHIVE</p><p>植物と、その時間を記録する。</p></div><div className="footer-contact"><p>CONTACT</p><a className="footer-instagram" href="https://www.instagram.com/me_happy1121/" target="_blank" rel="noreferrer" aria-label="Instagram @me_happy1121"><InstagramIcon /><span>@me_happy1121</span></a><a className="footer-email" href="mailto:komeume1121@gmail.com">komeume1121@gmail.com</a></div><nav className="footer-nav" aria-label="フッターナビゲーション"><p>EXPLORE</p><div><a href={siteHref('/journal')}>記事一覧</a><a href={siteHref('/records')}>成長記録</a><a href={siteHref('/mother-plants')}>品種</a><a href={siteHref('/care-guide')}>栽培ガイド</a><a href={siteHref('/shop')}>販売情報</a><a href={siteHref('/about')}>ABOUT</a></div></nav></div><small>© 2026 鵜ノ森</small></footer>;
 }
