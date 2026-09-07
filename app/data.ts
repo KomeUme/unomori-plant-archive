@@ -152,14 +152,21 @@ const createSasanoyukiParentStock = (id: string): ParentStock => ({
 const createSasanoyukiParentStockRange = (prefix: string, total: number) =>
   Array.from({ length: total }, (_, index) => createSasanoyukiParentStock(`${prefix}-${String(index + 1).padStart(2, '0')}`));
 
+const additionalSasanoyukiParentStockIds = [
+  'S(PD)-01', 'S(PD)-02', 'S(H)-04', 'S-05', 'S(PD)-06',
+  'B-01', 'B(PD)-02', 'B(PD)-03', 'B-04', 'B(PD)-05', 'B(PD)-06', 'B(PD)-07', 'B-08',
+] as const;
+
 /**
  * 管理番号は先頭の文字を大分類、続く文字を小分類として扱います。
- * 例: P → PD / PL / PX。新規の親株は同じ規則でIDを追加するだけで、一覧にも自動で分類されます。
+ * 例: P → PD / PL / PX。括弧内の記号はサブ分類として表示します。
+ * 新規の親株は同じ規則でIDを追加するだけで、一覧にも自動で分類されます。
  */
 export const parentStocks: ParentStock[] = [
   ...createSasanoyukiParentStockRange('PD', 13),
   ...createSasanoyukiParentStockRange('PL', 8),
   ...createSasanoyukiParentStockRange('PX', 1),
+  ...additionalSasanoyukiParentStockIds.map(createSasanoyukiParentStock),
   {
     id: 'UM-01',
     varietySlug: 'agave-victoriae-reginae',
