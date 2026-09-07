@@ -203,7 +203,7 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 }
 
 @media (max-width:900px) {
-  .pedigree-table-wrap,.pot-size-summary-wrap,.managed-pot-table-wrap,.annual-table-wrap { overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; touch-action:pan-x pan-y; }
+  .pedigree-table-wrap,.pot-size-summary-wrap,.managed-pot-table-wrap,.annual-table-wrap { overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; touch-action:pan-x pan-y; }.pedigree-table { min-width:480px; }.pedigree-table thead th:nth-child(n+4),.pedigree-table tbody tr:not(.management-group-row) td:nth-child(n+4) { display:none; }.stock-table-image { pointer-events:none; cursor:default; }.stock-table-zoom { display:none; }
 }
 
 @media (max-width:620px) {
