@@ -153,7 +153,7 @@ const createSasanoyukiParentStockRange = (prefix: string, total: number) =>
   Array.from({ length: total }, (_, index) => createSasanoyukiParentStock(`${prefix}-${String(index + 1).padStart(2, '0')}`));
 
 const additionalSasanoyukiParentStockIds = [
-  'S(PD)-01', 'S(PD)-02', 'S(H)-04', 'S-05', 'S(PD)-06',
+  'S(PD)-01', 'S(PD)-02', 'S(H)-03', 'S(H)-04', 'S-05', 'S(PD)-06',
   'B-01', 'B(PD)-02', 'B(PD)-03', 'B-04', 'B(PD)-05', 'B(PD)-06', 'B(PD)-07', 'B-08',
 ] as const;
 
