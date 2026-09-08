@@ -272,3 +272,25 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .guide-grid h3 { grid-column:2; margin:0 0 8px; font-size:22px; line-height:1.2; }
   .guide-grid article > p:not(.eyebrow) { grid-column:2; margin:0; line-height:1.75; }
 }
+
+.guide-intro-block { max-width:980px; margin:0 0 29px; }
+.guide-intro-block:last-child { margin-bottom:0; }
+.guide-intro-block h3 { margin:0 0 12px; color:#42564c; font-size:12px; letter-spacing:.08em; }
+.guide-intro-block p { margin:0 0 15px; color:var(--muted); font-size:14px; line-height:2; }
+.guide-intro-block p:last-child { margin-bottom:0; }
+.annual-chart-button { display:block; width:100%; padding:0; border:0; background:transparent; cursor:zoom-in; }
+.annual-chart-button img { transition:opacity .2s ease; }
+.annual-chart-button:hover img { opacity:.88; }
+.annual-chart-button:focus-visible { outline:2px solid var(--green); outline-offset:-5px; }
+.annual-chart-scope { max-width:1120px; margin:-9px 0 38px; padding:14px 17px; border-left:2px solid #a5b3aa; color:var(--muted); }
+.annual-chart-scope p { margin:0; font-size:12px; line-height:1.8; }
+.annual-chart-scope p + p { margin-top:4px; }
+.annual-chart-scope b { color:var(--green); font-size:11px; }
+
+@media (max-width:620px) {
+  .guide-intro-block { margin-bottom:25px; }
+  .guide-intro-block h3 { margin-bottom:10px; font-size:11px; }
+  .guide-intro-block p { margin-bottom:14px; font-size:13px; line-height:1.95; }
+  .annual-chart-scope { margin:-8px 0 32px; padding:12px 14px; }
+  .annual-chart-scope p { font-size:11px; line-height:1.75; }
+}
