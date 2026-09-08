@@ -290,6 +290,14 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .annual-guide-heading { margin:72px 0 24px; }
 .guide-point-icon { display:grid; width:30px; height:30px; place-items:center; margin:0 0 22px; color:#637a6d; }
 .guide-point-icon svg { width:100%; height:100%; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.4; }
+.seasonal-care { margin:0 0 66px; }
+.seasonal-care-heading { margin-bottom:24px; }
+.seasonal-care-table-wrap { max-width:1120px; overflow-x:auto; border-top:1px solid #ccd2cd; border-left:1px solid #ccd2cd; -webkit-overflow-scrolling:touch; }
+.seasonal-care-table { width:100%; min-width:700px; border-collapse:collapse; table-layout:fixed; }
+.seasonal-care-table th,.seasonal-care-table td { padding:17px 16px; border-right:1px solid #ccd2cd; border-bottom:1px solid #ccd2cd; text-align:left; }
+.seasonal-care-table thead th { color:#68786e; background:#eef1eb; font-size:11px; letter-spacing:.08em; }
+.seasonal-care-table tbody th { width:18%; color:var(--green); background:#f7f6ef; font-size:12px; font-weight:700; }
+.seasonal-care-table td { color:var(--muted); font-size:12px; line-height:1.65; }
 
 @media (max-width:620px) {
   .guide-intro-block { margin-bottom:25px; }
@@ -299,4 +307,10 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .annual-chart-scope p { font-size:11px; line-height:1.75; }
   .annual-guide-heading { margin:54px 0 20px; }
   .guide-point-icon { grid-column:1; grid-row:1; width:24px; height:24px; margin:2px 0 0; }
+  .seasonal-care { margin-bottom:47px; }
+  .seasonal-care-heading { margin-bottom:20px; }
+  .seasonal-care-table { min-width:620px; }
+  .seasonal-care-table th,.seasonal-care-table td { padding:14px 12px; }
+  .seasonal-care-table thead th { font-size:10px; }
+  .seasonal-care-table tbody th,.seasonal-care-table td { font-size:11px; }
 }
