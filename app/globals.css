@@ -318,6 +318,7 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .guide-detail-content .back-link { margin-bottom:48px; }
 .guide-detail-content .eyebrow { margin-bottom:11px; }
 .guide-detail-content > p:not(.eyebrow) { max-width:570px; margin:14px 0 0; color:var(--muted); font-size:13px; line-height:1.85; }
+.guide-last-updated { margin:48px 0 0; padding-top:14px; border-top:1px solid var(--line); color:#7b8880; font-family:monospace; font-size:10px; letter-spacing:.04em; }
 .seasonal-care { margin:0 0 66px; }
 .seasonal-care-with-link { margin-bottom:18px; }
 .seasonal-care-heading { margin-bottom:24px; }
