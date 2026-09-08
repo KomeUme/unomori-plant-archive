@@ -49,7 +49,7 @@ export function AnnualCareChart() {
       <div className="image-modal-backdrop annual-chart-modal stock-detail-image-modal" role="dialog" aria-modal="true" aria-label="年間育成早見表" onPointerDown={(event) => { if (event.target === event.currentTarget) setIsOpen(false); }}>
         <div className="image-modal-content">
           <button type="button" className="image-modal-close" aria-label="年間育成早見表を閉じる" onClick={() => setIsOpen(false)}>×</button>
-          <div className={`image-modal-stage${zoom > 1 ? ' is-zoomed' : ''}${isPanning ? ' is-panning' : ''}`} onWheel={zoomWithWheel} onPointerDown={startPan} onPointerMove={movePan} onPointerUp={finishPan} onPointerCancel={cancelPan} onDoubleClick={resetView}>
+          <div className={`image-modal-stage${zoom > 1 ? ' is-zoomed' : ''}${isPanning ? ' is-panning' : ''}`} onWheel={zoomWithWheel} onPointerDown={(event) => { if (event.target === event.currentTarget) { setIsOpen(false); return; } startPan(event); }} onPointerMove={movePan} onPointerUp={finishPan} onPointerCancel={cancelPan} onDoubleClick={resetView}>
             <img className="stock-detail-image-modal-image" src={siteHref('/agave-annual-care-chart.jpg')} alt="年間育成早見表" style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})` }} />
           </div>
           <div className="stock-detail-image-modal-footer"><div className="image-modal-controls" aria-label="画像の表示倍率"><button type="button" aria-label="縮小" onClick={() => changeZoom(-.2)} disabled={zoom <= 1}>−</button><span>{Math.round(zoom * 100)}%</span><button type="button" aria-label="拡大" onClick={() => changeZoom(.2)} disabled={zoom >= 4}>＋</button><button type="button" className="image-modal-reset" onClick={resetView}>リセット</button></div></div>

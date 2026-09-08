@@ -58,7 +58,7 @@ export function useImageZoom() {
     if (points.length < 2) return;
     pinchStateRef.current = { startDistance: distanceBetween(points[0], points[1]), startZoom: zoom };
     panStateRef.current = emptyPanState();
-    setIsPanning(false);
+    setIsPanning(true);
   };
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
