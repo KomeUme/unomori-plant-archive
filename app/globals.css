@@ -322,6 +322,14 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .guide-detail-content .back-link { margin-bottom:48px; }
 .guide-detail-content .eyebrow { margin-bottom:11px; }
 .guide-detail-content > p:not(.eyebrow) { max-width:570px; margin:14px 0 0; color:var(--muted); font-size:13px; line-height:1.85; }
+.soil-recipe { max-width:570px; margin:28px 0 0; border:1px solid #cbd2cb; background:#f8f8f4; }
+.soil-recipe > p { margin:0; padding:13px 16px; border-bottom:1px solid #cbd2cb; color:var(--green); font-family:monospace; font-size:12px; letter-spacing:.06em; }
+.soil-recipe table { width:100%; border-collapse:collapse; }
+.soil-recipe th,.soil-recipe td { padding:11px 16px; border-bottom:1px solid #d9ded9; text-align:left; font-size:12px; }
+.soil-recipe tr:last-child th,.soil-recipe tr:last-child td { border-bottom:0; }
+.soil-recipe thead th { color:#6f7d75; background:#eff1ec; font-size:10px; letter-spacing:.08em; }
+.soil-recipe tbody th { color:var(--green); font-weight:600; }
+.soil-recipe td { width:72px; color:#68786e; font-family:monospace; }
 .guide-last-updated { margin:48px 0 0; padding-top:14px; border-top:1px solid var(--line); color:#7b8880; font-family:monospace; font-size:10px; letter-spacing:.04em; }
 .seasonal-care { margin:0 0 66px; }
 .seasonal-care-with-link { margin-bottom:18px; }
@@ -350,6 +358,8 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .guide-method-link h2 { font-size:21px; }
   .guide-detail-content h2 { font-size:29px; }
   .guide-detail-content > p:not(.eyebrow) { font-size:13px; }
+  .soil-recipe { margin-top:24px; }
+  .soil-recipe > p,.soil-recipe th,.soil-recipe td { padding-left:13px; padding-right:13px; }
   .seasonal-care { margin-bottom:47px; }
   .seasonal-care-with-link { margin-bottom:14px; }
   .seasonal-care-heading { margin-bottom:20px; }
