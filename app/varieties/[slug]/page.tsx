@@ -32,8 +32,9 @@ export default async function VarietyDetailPage({ params }: PageProps) {
         <p className="eyebrow">VARIETY / PARENT STOCKS</p>
         <h1>親株一覧</h1>
         <div className="variety-ledger-intro">
-          <div className="variety-ledger-heading"><h2>{variety.name}</h2><span>親株ID {stocks.length}件</span></div>
+          <div className="variety-ledger-heading"><h2>{variety.name}</h2></div>
           <p className="variety-botanical">{variety.botanicalName}</p>
+          <span className="variety-parent-stock-count">親株ID {stocks.length}件</span>
           <p>管理番号で親株を一覧化しています。括弧内の記号は補助情報として扱い、並び順には反映しません。</p>
         </div>
         <a className="variety-detail-back-link" href={siteHref('/mother-plants')}><span aria-hidden="true">←</span> 品種一覧へ戻る</a>
