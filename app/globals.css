@@ -80,14 +80,14 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 
 /* Care guide and parent stock detail refinements */
 .care-guide-page-hero { position:relative; overflow:hidden; }
-.care-guide-sasanoyuki-illustration { position:absolute; right:10vw; bottom:32px; width:118px; color:#557064; opacity:.45; pointer-events:none; }
-.care-guide-sasanoyuki-illustration svg { display:block; width:100%; height:auto; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.45; }
+.care-guide-sasanoyuki-illustration { position:absolute; right:10vw; bottom:28px; width:145px; opacity:.62; pointer-events:none; }
+.care-guide-sasanoyuki-illustration img { display:block; width:100%; height:auto; mix-blend-mode:multiply; }
 .variety-ledger-intro .variety-botanical { margin:9px 0 0; }
 .variety-parent-stock-count { display:inline-block; margin-top:13px; color:var(--lime); font-size:13px; font-weight:700; letter-spacing:.04em; }
 
 @media (max-width:620px) {
   .care-guide-page-hero { padding-bottom:85px; }
-  .care-guide-sasanoyuki-illustration { right:7vw; bottom:23px; width:86px; opacity:.39; }
+  .care-guide-sasanoyuki-illustration { right:7vw; bottom:19px; width:108px; opacity:.55; }
 }
 
 /* Independent page layout */
@@ -369,5 +369,5 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 
 @media (max-width:620px) {
   .care-guide-page-hero { padding-bottom:85px; }
-  .care-guide-sasanoyuki-illustration { right:7vw; bottom:23px; width:86px; opacity:.39; }
+  .care-guide-sasanoyuki-illustration { right:7vw; bottom:19px; width:108px; opacity:.55; }
 }
