@@ -290,12 +290,15 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .annual-guide-heading { margin:72px 0 24px; }
 .guide-point-icon { display:grid; width:30px; height:30px; place-items:center; margin:0 0 22px; color:#637a6d; }
 .guide-point-icon svg { width:100%; height:100%; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.4; }
-.guide-method-link { display:grid; grid-template-columns:minmax(0,1fr) max-content; gap:24px; align-items:center; max-width:1120px; margin:16px 0 0; padding:19px 23px; border:1px solid #c6cec7; border-left:3px solid #658173; background:#fbfcf9; transition:background .2s,transform .2s; }
+.guide-method-link { display:grid; grid-template-columns:minmax(0,1fr) max-content; gap:24px; align-items:center; max-width:1120px; margin:14px 0 0; padding:17px 23px; border:1px solid #c6cec7; background:white; transition:background .2s,transform .2s; }
+.guide-method-link-primary { border-left:4px solid var(--lime); }
+.guide-method-link-secondary { border-left:4px solid #4d6759; }
 .guide-method-link:hover { background:#f7f8f3; transform:translateX(3px); }
 .guide-method-link .eyebrow { margin:0 0 6px; }
-.guide-method-label { display:inline-block; margin:0 0 6px; color:#617b6e; font-size:10px; font-weight:700; letter-spacing:.08em; }
-.guide-method-link h2,.guide-detail-content h2 { margin:0; color:var(--green); font-family:Georgia,"Yu Mincho",serif; font-size:clamp(23px,2.4vw,30px); font-weight:400; letter-spacing:-.03em; }
-.guide-method-description { margin:7px 0 0; color:var(--muted); font-size:12px; line-height:1.7; }
+.guide-method-label { display:inline-block; margin:0 0 6px; padding:3px 6px; border:1px solid #a6b42f; color:#617214; background:#f2f4c4; font-size:9px; font-weight:700; letter-spacing:.08em; }
+.guide-method-link h2 { margin:0; color:var(--green); font-family:Georgia,"Yu Mincho",serif; font-size:clamp(20px,2vw,23px); font-weight:400; letter-spacing:-.03em; }
+.guide-detail-content h2 { margin:0; color:var(--green); font-family:Georgia,"Yu Mincho",serif; font-size:clamp(28px,3vw,38px); font-weight:400; letter-spacing:-.03em; }
+.guide-method-description { margin:6px 0 0; color:var(--muted); font-size:11px; line-height:1.7; }
 .guide-method-link > span { color:var(--green); font-size:11px; font-weight:700; white-space:nowrap; }
 .guide-method-link > span b { margin-left:8px; font-size:15px; font-weight:400; }
 .shelf-guide-link { margin-top:0; }
@@ -325,9 +328,10 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .annual-chart-scope p { font-size:11px; line-height:1.75; }
   .annual-guide-heading { margin:54px 0 20px; }
   .guide-point-icon { grid-column:1; grid-row:1; width:24px; height:24px; margin:2px 0 0; }
-  .guide-method-link { grid-template-columns:1fr; gap:14px; margin-top:10px; padding:17px 18px; }
+  .guide-method-link { grid-template-columns:1fr; gap:12px; margin-top:10px; padding:16px 18px; }
   .guide-method-link:hover { transform:none; }
-  .guide-method-link h2,.guide-detail-content h2 { font-size:25px; }
+  .guide-method-link h2 { font-size:21px; }
+  .guide-detail-content h2 { font-size:29px; }
   .guide-detail-content > p:not(.eyebrow) { font-size:13px; }
   .seasonal-care { margin-bottom:47px; }
   .seasonal-care-with-link { margin-bottom:14px; }
