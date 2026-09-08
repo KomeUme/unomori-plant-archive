@@ -86,8 +86,8 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .variety-parent-stock-count { display:inline-block; margin-top:13px; color:var(--lime); font-size:13px; font-weight:700; letter-spacing:.04em; }
 
 @media (max-width:620px) {
-  .care-guide-page-hero { padding-bottom:85px; }
-  .care-guide-sasanoyuki-illustration { right:7vw; bottom:19px; width:108px; opacity:.55; }
+  .care-guide-page-hero { padding-bottom:156px; }
+  .care-guide-sasanoyuki-illustration { right:7vw; bottom:23px; width:108px; opacity:.55; }
 }
 
 /* Independent page layout */
