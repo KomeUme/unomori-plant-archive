@@ -370,6 +370,6 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 }
 
 @media (max-width:620px) {
-  .care-guide-page-hero { padding-bottom:85px; }
-  .care-guide-sasanoyuki-illustration { right:7vw; bottom:19px; width:108px; opacity:.55; }
+  .care-guide-page-hero { padding-bottom:132px; }
+  .care-guide-sasanoyuki-illustration { right:7vw; bottom:22px; width:108px; opacity:.55; }
 }
