@@ -336,7 +336,8 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .seasonal-care { margin-bottom:47px; }
   .seasonal-care-with-link { margin-bottom:14px; }
   .seasonal-care-heading { margin-bottom:20px; }
-  .seasonal-care-table { min-width:620px; }
+  .seasonal-care-table { min-width:650px; }
+  .seasonal-care-table thead th:first-child,.seasonal-care-table tbody th { width:100px; }
   .seasonal-care-table th,.seasonal-care-table td { padding:14px 12px; }
   .seasonal-care-table thead th { font-size:10px; }
   .seasonal-care-table tbody th,.seasonal-care-table td { font-size:11px; }
