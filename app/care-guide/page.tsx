@@ -5,26 +5,26 @@ const guides = [
   {
     icon: 'light',
     title: '光',
-    body: '株の状態を見ながら、少しずつ日差しに慣らします。急に強い光へ移すことは避けます。',
-    more: '季節や天候による光の強さも見ながら、葉色や葉焼けの兆候に合わせて置き場所を調整します。',
+    body: '株の状態を見ながら、光の強さを調整します。季節によっても光量が大きく変化するため、葉色や葉焼けの兆候に合わせて置き場所を変えます。',
+    more: '同じ品種でも個体差により好む光の強さが変わるため、棚の上での配置などにより調整します。',
   },
   {
     icon: 'wind',
     title: '風',
-    body: 'カビや病害虫を防ぎ、用土を早く乾かして乾湿のメリハリをつくるため、年間を通して穏やかな風を確保します。',
-    more: '多くの多肉植物は夜間に気孔を開くため、空気を停滞させないことも健やかな生育につながります。',
+    body: '年間を通して穏やかな風を確保し、菌（カビなど）の発生や病害虫を防ぎます。また、用土を早く乾かして乾湿のメリハリを作ります。',
+    more: '多くの多肉植物はCAM型光合成であり夜間に気孔を開くため、空気を停滞させないことでスムーズな呼吸を助けます。',
   },
   {
     icon: 'water',
     title: '水',
-    body: '用土の乾きと根の状態を確認してから与えます。季節ごとの気温と生育に合わせて間隔を調整します。',
-    more: '気温が低い時期や根が弱っている時期は、量よりもタイミングを優先し、乾き方を確認しながら調整します。',
+    body: '用土の乾きと根の状態を確認してから与えます。季節ごとに変わる用土の乾く速度と生育に合わせて間隔を調整します。',
+    more: '気温が低い時期や根が弱っている時期は、量よりもタイミングを見極め、鉢を持ったときの重さを確認しながら調整します。',
   },
   {
     icon: 'soil',
     title: '土',
     body: '市販の培養土は、手頃で扱いやすくおすすめです。',
-    more: '最も望ましいのは、置き場所や水やりの頻度に合わせて基本用土を自分で配合することです。ただし、光・風・水の3つを適切に整えられれば、土の選択肢を極端に狭める必要はありません。土の配合は、まずこの3項目を把握してから見直すとよいでしょう。',
+    more: '最も望ましいのは、置き場所や水やりの頻度に合わせて基本用土を自分で配合することです。ただし、光・風・水の3つを適切に整えられれば、極論どんな土でも育成は可能です。土の配合は、まずこの3項目を把握してから見直すと良いでしょう。',
   },
 ];
 
@@ -56,7 +56,7 @@ const guideIntroduction = [
 export default function CareGuidePage() {
   return <main><Header />
     <section className="page-hero"><p className="eyebrow">CARE GUIDE</p><h1>栽培ガイド</h1><p>サボテン、アガベ、夏型コーデックスを育ててきた実体験をもとに、栽培の要点をまとめています。関東圏の屋外・多肉棚での管理を前提とした内容のため、お住まいの地域や環境に合わせて参考程度にご活用ください。一個人の経験に基づくものなので、複数の情報源や生産者の意見も併せてご参照ください。</p></section>
-    <section className="section guide-section page-section"><div className="guide-content"><div className="guide-introduction"><p className="eyebrow">BEFORE YOU BEGIN</p><h2>まず、植物の状態を確認。</h2>{guideIntroduction.map(({ title, paragraphs }) => <div className="guide-intro-block" key={title}><h3>{title}</h3>{paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>)}</div><div className="guide-points-heading"><p className="eyebrow">CARE POINTS</p><h2>栽培におけるポイント</h2><p className="guide-priority">優先順位　光 <span>＞</span> 風 <span>＞</span> 水 <span>＞</span> 土</p></div><div className="guide-grid">{guides.map(({ icon, title, body, more }) => <article key={title}><span className="guide-point-icon"><GuidePointIcon type={icon} /></span><h3>{title}</h3><p>{body} {more}</p></article>)}</div><div className="annual-guide-heading"><h2>年間を通した育成方法について</h2></div><AnnualCareChart /><div className="annual-chart-scope"><p><b>対象</b>　サボテン、アガベ、夏型コーデックスなど</p><p>地域・置き場所・雨の当たり方・株の状態によって変わるため、表は目安として使い、日々の状態を見ながら調整してください。</p></div><div className="annual-graph-note"><p className="eyebrow">ABOUT THE SEASONS</p><p>日本では四季によって、気温・日照・降水量・湿度が大きく変わります。こうした短期間の環境変化は、植物が原生地で経験する条件とは異なることがあります。栽培では日本の季節に合わせながら、原生地に近い光・風・水・温度のバランスを、株の状態に応じて整えることが大切です。</p></div><div className="season-note"><p className="eyebrow">THIS MONTH / AUGUST</p><b>夏の管理メモ</b><p>強い西日と葉焼けに注意。水やり後は株元に風を通し、夜間の蒸れを避けます。</p></div></div></section>
+    <section className="section guide-section page-section"><div className="guide-content"><div className="guide-introduction"><p className="eyebrow">BEFORE YOU BEGIN</p><h2>まず、植物の状態を確認。</h2>{guideIntroduction.map(({ title, paragraphs }) => <div className="guide-intro-block" key={title}><h3>{title}</h3>{paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>)}</div><div className="guide-points-heading"><p className="eyebrow">CARE POINTS</p><h2>栽培におけるポイント</h2><p className="guide-priority">優先順位　光 <span>＞</span> 風 <span>＞</span> 水 <span>＞</span> 土</p></div><div className="guide-grid">{guides.map(({ icon, title, body, more }) => <article key={title}><span className="guide-point-icon"><GuidePointIcon type={icon} /></span><h3>{title}</h3><p>{body} {more}</p></article>)}</div><div className="guide-points-heading annual-guide-heading"><p className="eyebrow">ANNUAL CARE</p><h2>年間を通した育成方法</h2></div><AnnualCareChart /><div className="annual-chart-scope"><p><b>対象</b>　サボテン、アガベ、夏型コーデックスなど</p><p>地域・置き場所・雨の当たり方・株の状態によって変わるため、表は目安として使い、日々の状態を見ながら調整してください。</p></div><div className="annual-graph-note"><p className="eyebrow">ABOUT THE SEASONS</p><p>日本では四季によって、気温・日照・降水量・湿度が大きく変わります。こうした短期間の環境変化は、植物が原生地で経験する条件とは異なることがあります。栽培では日本の季節に合わせながら、原生地に近い光・風・水・温度のバランスを、株の状態に応じて整えることが大切です。</p></div><div className="season-note"><p className="eyebrow">THIS MONTH / AUGUST</p><b>夏の管理メモ</b><p>強い西日と葉焼けに注意。水やり後は株元に風を通し、夜間の蒸れを避けます。</p></div></div></section>
     <Footer />
   </main>;
 }

@@ -288,7 +288,6 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .annual-chart-scope p + p { margin-top:4px; }
 .annual-chart-scope b { color:var(--green); font-size:11px; }
 .annual-guide-heading { margin:72px 0 24px; }
-.annual-guide-heading h2 { margin:0; color:var(--green); font-family:Georgia,"Yu Mincho",serif; font-size:clamp(27px,3vw,38px); font-weight:400; letter-spacing:-.03em; }
 .guide-point-icon { display:grid; width:30px; height:30px; place-items:center; margin:0 0 22px; color:#637a6d; }
 .guide-point-icon svg { width:100%; height:100%; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.4; }
 
@@ -299,6 +298,5 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .annual-chart-scope { margin:-8px 0 32px; padding:12px 14px; }
   .annual-chart-scope p { font-size:11px; line-height:1.75; }
   .annual-guide-heading { margin:54px 0 20px; }
-  .annual-guide-heading h2 { font-size:27px; }
   .guide-point-icon { grid-column:1; grid-row:1; width:24px; height:24px; margin:2px 0 0; }
 }
