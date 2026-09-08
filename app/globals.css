@@ -275,7 +275,8 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 
 .guide-intro-block { max-width:980px; margin:0 0 29px; }
 .guide-intro-block:last-child { margin-bottom:0; }
-.guide-intro-block h3 { margin:0 0 12px; color:#42564c; font-size:12px; letter-spacing:.08em; }
+.guide-intro-block h3 { display:flex; align-items:center; gap:8px; margin:0 0 12px; color:#42564c; font-size:12px; letter-spacing:.08em; }
+.guide-intro-block h3::before { width:5px; height:5px; flex:0 0 auto; border-radius:50%; background:var(--ink); content:''; }
 .guide-intro-block p { margin:0 0 15px; color:var(--muted); font-size:14px; line-height:2; }
 .guide-intro-block p:last-child { margin-bottom:0; }
 .annual-chart-button { display:block; width:100%; padding:0; border:0; background:transparent; cursor:zoom-in; }
