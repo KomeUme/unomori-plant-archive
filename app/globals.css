@@ -296,6 +296,10 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .seasonal-care-table { width:100%; min-width:700px; border-collapse:collapse; table-layout:fixed; }
 .seasonal-care-table th,.seasonal-care-table td { padding:17px 16px; border-right:1px solid #ccd2cd; border-bottom:1px solid #ccd2cd; text-align:left; }
 .seasonal-care-table thead th { color:#68786e; background:#eef1eb; font-size:11px; letter-spacing:.08em; }
+.seasonal-care-table thead th:nth-child(2) { background:#d6e4cf; color:#435c4e; }
+.seasonal-care-table thead th:nth-child(3) { background:#f3e1a5; color:#5f5635; }
+.seasonal-care-table thead th:nth-child(4) { background:#eed8cb; color:#655047; }
+.seasonal-care-table thead th:nth-child(5) { background:#bdcad6; color:#465966; }
 .seasonal-care-table tbody th { width:18%; color:var(--green); background:#f7f6ef; font-size:12px; font-weight:700; }
 .seasonal-care-table td { color:var(--muted); font-size:12px; line-height:1.65; white-space:pre-line; }
 
