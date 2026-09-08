@@ -290,17 +290,19 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .annual-guide-heading { margin:72px 0 24px; }
 .guide-point-icon { display:grid; width:30px; height:30px; place-items:center; margin:0 0 22px; color:#637a6d; }
 .guide-point-icon svg { width:100%; height:100%; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.4; }
-.watering-guide-link { display:grid; grid-template-columns:minmax(0,1fr) max-content; gap:30px; align-items:end; max-width:1120px; margin:28px 0 0; padding:28px 30px; border:1px solid #bdc8bf; border-left:4px solid var(--green); background:#fbfcf9; transition:background .2s,transform .2s; }
-.watering-guide-link:hover { background:#f7f8f3; transform:translateX(4px); }
-.watering-guide-link .eyebrow { margin:0 0 10px; }
-.watering-guide-link h2,.watering-guide-content h2 { margin:0; color:var(--green); font-family:Georgia,"Yu Mincho",serif; font-size:clamp(28px,3vw,38px); font-weight:400; letter-spacing:-.03em; }
-.watering-guide-link p:not(.eyebrow),.watering-guide-content > p:not(.eyebrow) { max-width:570px; margin:14px 0 0; color:var(--muted); font-size:13px; line-height:1.85; }
-.watering-guide-link > span { color:var(--green); font-size:12px; font-weight:700; white-space:nowrap; }
-.watering-guide-link > span b { margin-left:9px; font-size:16px; font-weight:400; }
-.watering-guide-content { max-width:850px; }
-.watering-guide-content .back-link { margin-bottom:48px; }
-.watering-guide-content .eyebrow { margin-bottom:11px; }
+.guide-method-link { display:grid; grid-template-columns:minmax(0,1fr) max-content; gap:24px; align-items:center; max-width:1120px; margin:16px 0 0; padding:19px 23px; border:1px solid #c6cec7; border-left:3px solid #658173; background:#fbfcf9; transition:background .2s,transform .2s; }
+.guide-method-link:hover { background:#f7f8f3; transform:translateX(3px); }
+.guide-method-link .eyebrow { margin:0 0 6px; }
+.guide-method-link h2,.guide-detail-content h2 { margin:0; color:var(--green); font-family:Georgia,"Yu Mincho",serif; font-size:clamp(23px,2.4vw,30px); font-weight:400; letter-spacing:-.03em; }
+.guide-method-link > span { color:var(--green); font-size:11px; font-weight:700; white-space:nowrap; }
+.guide-method-link > span b { margin-left:8px; font-size:15px; font-weight:400; }
+.shelf-guide-link { margin-top:0; }
+.guide-detail-content { max-width:850px; }
+.guide-detail-content .back-link { margin-bottom:48px; }
+.guide-detail-content .eyebrow { margin-bottom:11px; }
+.guide-detail-content > p:not(.eyebrow) { max-width:570px; margin:14px 0 0; color:var(--muted); font-size:13px; line-height:1.85; }
 .seasonal-care { margin:0 0 66px; }
+.seasonal-care-with-link { margin-bottom:18px; }
 .seasonal-care-heading { margin-bottom:24px; }
 .seasonal-care-table-wrap { max-width:1120px; overflow-x:auto; border-top:1px solid #ccd2cd; border-left:1px solid #ccd2cd; -webkit-overflow-scrolling:touch; }
 .seasonal-care-table { width:100%; min-width:700px; border-collapse:collapse; table-layout:fixed; }
@@ -321,11 +323,12 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .annual-chart-scope p { font-size:11px; line-height:1.75; }
   .annual-guide-heading { margin:54px 0 20px; }
   .guide-point-icon { grid-column:1; grid-row:1; width:24px; height:24px; margin:2px 0 0; }
-  .watering-guide-link { grid-template-columns:1fr; gap:19px; margin-top:20px; padding:23px 21px; }
-  .watering-guide-link:hover { transform:none; }
-  .watering-guide-link h2,.watering-guide-content h2 { font-size:29px; }
-  .watering-guide-link p:not(.eyebrow),.watering-guide-content > p:not(.eyebrow) { font-size:13px; }
+  .guide-method-link { grid-template-columns:1fr; gap:14px; margin-top:10px; padding:17px 18px; }
+  .guide-method-link:hover { transform:none; }
+  .guide-method-link h2,.guide-detail-content h2 { font-size:25px; }
+  .guide-detail-content > p:not(.eyebrow) { font-size:13px; }
   .seasonal-care { margin-bottom:47px; }
+  .seasonal-care-with-link { margin-bottom:14px; }
   .seasonal-care-heading { margin-bottom:20px; }
   .seasonal-care-table { min-width:620px; }
   .seasonal-care-table th,.seasonal-care-table td { padding:14px 12px; }
