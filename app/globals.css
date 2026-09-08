@@ -297,7 +297,7 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .seasonal-care-table th,.seasonal-care-table td { padding:17px 16px; border-right:1px solid #ccd2cd; border-bottom:1px solid #ccd2cd; text-align:left; }
 .seasonal-care-table thead th { color:#68786e; background:#eef1eb; font-size:11px; letter-spacing:.08em; }
 .seasonal-care-table tbody th { width:18%; color:var(--green); background:#f7f6ef; font-size:12px; font-weight:700; }
-.seasonal-care-table td { color:var(--muted); font-size:12px; line-height:1.65; }
+.seasonal-care-table td { color:var(--muted); font-size:12px; line-height:1.65; white-space:pre-line; }
 
 @media (max-width:620px) {
   .guide-intro-block { margin-bottom:25px; }
