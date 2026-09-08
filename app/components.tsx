@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { LanguageToggle } from './language-toggle';
 import { siteHref } from './site-url';
 
@@ -35,10 +35,18 @@ export function Header() {
   const translationSearch = useSyncExternalStore(subscribeToHeaderTranslation, getClientTranslationSearch, getServerTranslationSearch);
   const headerHref = (path: string) => `${siteHref(path)}${translationSearch}`;
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = previousOverflow; };
+  }, [menuOpen]);
+
   return <header className="site-header">
     <a className="brand" href={headerHref('/')} aria-label="鵜ノ森 トップ"><span className="brand-mark">鵜</span><span>鵜ノ森 <em>PLANT ARCHIVE</em></span></a>
     <LanguageToggle className="desktop-language-toggle" />
-    <nav id="site-navigation" className={menuOpen ? 'is-open' : ''} aria-label="メインナビゲーション" onClick={() => setMenuOpen(false)}><a href={headerHref('/')} className="nav-top">TOP</a><a href={headerHref('/journal')}>記事一覧</a><a href={headerHref('/mother-plants')}>品種</a><a href={headerHref('/care-guide')}>栽培ガイド</a><a href={headerHref('/about')}>ABOUT</a></nav>
+    {menuOpen && <button className="mobile-menu-backdrop" type="button" aria-label="メニューを閉じる" onClick={() => setMenuOpen(false)} />}
+    <nav id="site-navigation" className={menuOpen ? 'is-open' : ''} aria-label="メインナビゲーション"><a href={headerHref('/')} className="nav-top" onClick={() => setMenuOpen(false)}>TOP</a><a href={headerHref('/journal')} onClick={() => setMenuOpen(false)}>記事一覧</a><a href={headerHref('/mother-plants')} onClick={() => setMenuOpen(false)}>品種</a><a href={headerHref('/care-guide')} onClick={() => setMenuOpen(false)}>栽培ガイド</a><a href={headerHref('/about')} onClick={() => setMenuOpen(false)}>ABOUT</a></nav>
     <div className="header-actions"><LanguageToggle className="mobile-language-toggle" /><a className="header-shop" href={headerHref('/shop')} aria-label="オンラインストア" title="オンラインストア"><span className="shopping-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round"><path d="M5.4 8.1h13.2l-1.05 10.7H6.45L5.4 8.1Zm3.5-.05V6.65a3.1 3.1 0 0 1 6.2 0v1.4" /></svg></span></a><button className="mobile-menu-toggle" type="button" aria-label={menuOpen ? 'メニューを閉じる' : 'メニューを開く'} aria-controls="site-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen((isOpen) => !isOpen)}><span /><span /></button></div>
   </header>;
 }
