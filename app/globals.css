@@ -301,6 +301,9 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .guide-method-description { margin:6px 0 0; color:var(--muted); font-size:11px; line-height:1.7; }
 .guide-method-link > span { color:var(--green); font-size:11px; font-weight:700; white-space:nowrap; }
 .guide-method-link > span b { margin-left:8px; font-size:15px; font-weight:400; }
+.guide-method-actions { display:flex; align-items:center; gap:12px; }
+.watering-guide-illustration { display:grid; width:28px; height:28px; place-items:center; color:#789084; }
+.watering-guide-illustration svg { width:100%; height:100%; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.4; }
 .shelf-guide-link { margin-top:0; }
 .guide-detail-content { max-width:850px; }
 .guide-detail-content .back-link { margin-bottom:48px; }
@@ -332,6 +335,7 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .guide-method-link:hover { transform:none; }
   .guide-method-link h2 { font-size:21px; }
   .guide-detail-content h2 { font-size:29px; }
+  .guide-method-actions { justify-content:space-between; }
   .guide-detail-content > p:not(.eyebrow) { font-size:13px; }
   .seasonal-care { margin-bottom:47px; }
   .seasonal-care-with-link { margin-bottom:14px; }
