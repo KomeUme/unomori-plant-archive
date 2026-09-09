@@ -308,6 +308,7 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .first-care-links-heading { margin:0 0 15px; }
 .first-care-links-heading .eyebrow { margin:0 0 7px; }
 .first-care-links-heading h2 { margin:0; color:var(--green); font-family:Georgia,"Yu Mincho",serif; font-size:clamp(25px,2.6vw,32px); font-weight:400; letter-spacing:-.03em; }
+.first-care-links-heading > p:last-child { max-width:620px; margin:12px 0 0; color:var(--muted); font-size:13px; line-height:1.85; }
 .first-care-links > div:last-child { border:1px solid #c6cec7; border-left:4px solid var(--green); background:#fafbf7; }
 .first-care-links a { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:17px 20px; color:var(--green); transition:background .2s, padding .2s; }
 .first-care-links a + a { border-top:1px solid #d5dbd5; }
@@ -365,6 +366,7 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .guide-point-icon { grid-column:1; grid-row:1; width:24px; height:24px; margin:2px 0 0; }
   .first-care-links { margin-top:30px; }
   .first-care-links-heading { margin-bottom:12px; }
+  .first-care-links-heading > p:last-child { margin-top:10px; font-size:12px; line-height:1.8; }
   .first-care-links a { padding:15px 16px; }
   .first-care-links a:hover { padding-left:16px; }
   .first-care-links a span { font-size:18px; }
