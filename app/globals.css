@@ -342,7 +342,7 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .guide-detail-content .back-link { margin-bottom:48px; }
 .guide-detail-content .eyebrow { margin-bottom:11px; }
 .guide-detail-content > p:not(.eyebrow) { max-width:570px; margin:14px 0 0; color:var(--muted); font-size:13px; line-height:1.85; }
-.shading-diagram { max-width:620px; margin:28px 0 34px; padding:22px 24px 16px; border:1px solid #cbd2cb; background:#f8f9f5; }
+.shading-diagram { max-width:620px; margin:28px 0 34px; padding:22px 24px; border:1px solid #cbd2cb; background:#f8f9f5; }
 .shading-diagram svg { display:block; width:100%; height:auto; }
 .shading-diagram svg > g { fill:none; stroke:#637a6d; stroke-linecap:round; stroke-linejoin:round; }
 .shading-diagram-sun { stroke-width:1.6; }
@@ -351,7 +351,6 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .shading-diagram-soft-rays { stroke:#8ca094 !important; stroke-width:1.25; opacity:.7; }
 .shading-diagram-plant { stroke:#637a6d !important; stroke-width:1.5; }
 .shading-diagram text { fill:#718078; stroke:none; font-family:monospace; font-size:10px; letter-spacing:.05em; }
-.shading-diagram figcaption { margin-top:12px; color:#7b8981; font-size:11px; line-height:1.7; }
 .soil-recipe { max-width:570px; margin:28px 0 0; border:1px solid #cbd2cb; background:#f8f8f4; }
 .soil-recipe > p { margin:0; padding:13px 16px; border-bottom:1px solid #cbd2cb; color:var(--green); font-family:monospace; font-size:12px; letter-spacing:.06em; }
 .soil-recipe table { width:100%; border-collapse:collapse; }
@@ -396,8 +395,7 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .guide-method-link h2 { font-size:21px; }
   .guide-detail-content h2 { font-size:29px; }
   .guide-detail-content > p:not(.eyebrow) { font-size:13px; }
-  .shading-diagram { margin:24px 0 30px; padding:17px 14px 13px; }
-  .shading-diagram figcaption { margin-top:9px; font-size:10px; }
+  .shading-diagram { margin:24px 0 30px; padding:17px 14px; }
   .soil-recipe { margin-top:24px; }
   .soil-recipe > p,.soil-recipe th,.soil-recipe td { padding-left:13px; padding-right:13px; }
   .seasonal-care { margin-bottom:47px; }
