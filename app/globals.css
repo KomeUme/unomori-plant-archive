@@ -349,6 +349,7 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .shading-diagram-strong-rays { stroke:#566f61 !important; stroke-width:2; }
 .shading-diagram-net { stroke:#7c8e83 !important; stroke-dasharray:2 4; stroke-width:1.3; }
 .shading-diagram-soft-rays { stroke:#8ca094 !important; stroke-width:1.25; opacity:.7; }
+.shading-diagram-plant { stroke:#637a6d !important; stroke-width:1.5; }
 .shading-diagram text { fill:#718078; stroke:none; font-family:monospace; font-size:10px; letter-spacing:.05em; }
 .shading-diagram figcaption { margin-top:12px; color:#7b8981; font-size:11px; line-height:1.7; }
 .soil-recipe { max-width:570px; margin:28px 0 0; border:1px solid #cbd2cb; background:#f8f8f4; }
