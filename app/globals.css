@@ -313,8 +313,8 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .first-care-links a { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:17px 20px; color:var(--green); transition:background .2s, padding .2s; }
 .first-care-links a + a { border-top:1px solid #d5dbd5; }
 .first-care-links a:hover { padding-left:24px; background:#f1f4ee; }
-.first-care-links a > div { display:grid; gap:4px; }
-.first-care-links a small { color:#87938c; font-family:monospace; font-size:8px; font-weight:400; letter-spacing:.12em; }
+.first-care-links a > div { display:block; }
+.first-care-links a .eyebrow { margin:0 0 6px; color:#718078; font-size:9px; }
 .first-care-links a span { font-family:Georgia,"Yu Mincho",serif; font-size:20px; letter-spacing:-.02em; }
 .first-care-links a b { font-size:15px; font-weight:400; }
 .guide-method-link { display:grid; grid-template-columns:minmax(0,1fr) max-content; gap:24px; align-items:center; max-width:1120px; margin:14px 0 0; padding:17px 23px; border:1px solid #c6cec7; background:white; transition:background .2s,transform .2s; }

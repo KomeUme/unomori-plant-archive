@@ -74,7 +74,7 @@ function FirstCareLinks() {
     { href: '/care-guide/acclimation', title: '購入直後の管理', englishTitle: 'NEW PLANT' },
   ];
 
-  return <section className="first-care-links" aria-labelledby="first-care-title"><div className="first-care-links-heading"><p className="eyebrow">START HERE</p><h2 id="first-care-title">はじめに確認</h2><p>栽培を始めるうえでの基礎的なステップです。特に水やりは、習得までに3年かかるともいわれるほど奥深く、一度の判断が株に大きく影響することもあります。すべてはトライ＆エラーです。</p></div><div>{links.map(({ href, title, englishTitle }) => <a href={siteHref(href)} key={href}><div><small>{englishTitle}</small><span>{title}</span></div><b aria-hidden="true">→</b></a>)}</div></section>;
+  return <section className="first-care-links" aria-labelledby="first-care-title"><div className="first-care-links-heading"><p className="eyebrow">START HERE</p><h2 id="first-care-title">はじめに確認</h2><p>栽培を始めるうえでの基礎的なステップです。特に水やりは、習得までに3年かかるともいわれるほど奥深く、一度の判断が株に大きく影響することもあります。すべてはトライ＆エラーです。</p></div><div>{links.map(({ href, title, englishTitle }) => <a href={siteHref(href)} key={href}><div><p className="eyebrow">{englishTitle}</p><span>{title}</span></div><b aria-hidden="true">→</b></a>)}</div></section>;
 }
 
 export default function CareGuidePage() {
