@@ -304,6 +304,16 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .guide-point-icon svg { width:100%; height:100%; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round; stroke-width:1.4; }
 .guide-grid h3 { display:flex; align-items:baseline; gap:9px; }
 .guide-grid h3 small { color:#87938c; font-family:monospace; font-size:9px; font-weight:400; letter-spacing:.12em; }
+.first-care-links { max-width:1120px; margin:40px 0 0; }
+.first-care-links-heading { margin:0 0 15px; }
+.first-care-links-heading .eyebrow { margin:0 0 7px; }
+.first-care-links-heading h2 { margin:0; color:var(--green); font-family:Georgia,"Yu Mincho",serif; font-size:clamp(25px,2.6vw,32px); font-weight:400; letter-spacing:-.03em; }
+.first-care-links > div:last-child { border:1px solid #c6cec7; border-left:4px solid var(--green); background:#fafbf7; }
+.first-care-links a { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:17px 20px; color:var(--green); transition:background .2s, padding .2s; }
+.first-care-links a + a { border-top:1px solid #d5dbd5; }
+.first-care-links a:hover { padding-left:24px; background:#f1f4ee; }
+.first-care-links a span { font-family:Georgia,"Yu Mincho",serif; font-size:20px; letter-spacing:-.02em; }
+.first-care-links a b { font-size:15px; font-weight:400; }
 .guide-method-link { display:grid; grid-template-columns:minmax(0,1fr) max-content; gap:24px; align-items:center; max-width:1120px; margin:14px 0 0; padding:17px 23px; border:1px solid #c6cec7; background:white; transition:background .2s,transform .2s; }
 .guide-method-link-primary { border-left:4px solid var(--green); }
 .guide-method-link-secondary { border-left:4px solid #a4b2aa; }
@@ -353,6 +363,11 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .annual-chart-scope p { font-size:11px; line-height:1.75; }
   .annual-guide-heading { margin:54px 0 20px; }
   .guide-point-icon { grid-column:1; grid-row:1; width:24px; height:24px; margin:2px 0 0; }
+  .first-care-links { margin-top:30px; }
+  .first-care-links-heading { margin-bottom:12px; }
+  .first-care-links a { padding:15px 16px; }
+  .first-care-links a:hover { padding-left:16px; }
+  .first-care-links a span { font-size:18px; }
   .guide-method-link { grid-template-columns:1fr; gap:12px; margin-top:10px; padding:16px 18px; }
   .guide-method-link:hover { transform:none; }
   .guide-method-link h2 { font-size:21px; }
