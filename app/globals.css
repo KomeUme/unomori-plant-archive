@@ -350,7 +350,14 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .shading-diagram-net { stroke:#7c8e83 !important; stroke-dasharray:2 4; stroke-width:1.3; }
 .shading-diagram-soft-rays { stroke:#8ca094 !important; stroke-width:1.25; opacity:.7; }
 .shading-diagram-plant { stroke:#637a6d !important; stroke-width:1.5; }
+.shading-diagram-sparkles { stroke:#9aa99e !important; stroke-width:1; opacity:.62; }
 .shading-diagram text { fill:#718078; stroke:none; font-family:monospace; font-size:10px; letter-spacing:.05em; }
+.shading-methods { max-width:620px; margin-top:38px; }
+.shading-methods > h3 { margin-top:0; }
+.shading-method-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); margin-top:18px; border-top:1px solid #cbd2cb; border-left:1px solid #cbd2cb; }
+.shading-method-list article { padding:18px; border-right:1px solid #cbd2cb; border-bottom:1px solid #cbd2cb; background:#f8f9f5; }
+.shading-method-list h4 { margin:0; color:var(--green); font-size:12px; letter-spacing:.04em; }
+.shading-method-list p { margin:9px 0 0; color:var(--muted); font-size:11px; line-height:1.75; }
 .soil-recipe { max-width:570px; margin:28px 0 0; border:1px solid #cbd2cb; background:#f8f8f4; }
 .soil-recipe > p { margin:0; padding:13px 16px; border-bottom:1px solid #cbd2cb; color:var(--green); font-family:monospace; font-size:12px; letter-spacing:.06em; }
 .soil-recipe table { width:100%; border-collapse:collapse; }
@@ -396,6 +403,9 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .guide-detail-content h2 { font-size:29px; }
   .guide-detail-content > p:not(.eyebrow) { font-size:13px; }
   .shading-diagram { margin:24px 0 30px; padding:17px 14px; }
+  .shading-methods { margin-top:34px; }
+  .shading-method-list { grid-template-columns:1fr; margin-top:15px; }
+  .shading-method-list article { padding:16px; }
   .soil-recipe { margin-top:24px; }
   .soil-recipe > p,.soil-recipe th,.soil-recipe td { padding-left:13px; padding-right:13px; }
   .seasonal-care { margin-bottom:47px; }
