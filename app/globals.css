@@ -331,7 +331,7 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
 .guide-method-link .eyebrow { margin:0 0 6px; }
 .guide-method-label { display:inline-block; margin:0 0 6px; padding:2px 5px; border:1px solid #b9c4bc; color:#708078; background:transparent; font-size:9px; font-weight:600; letter-spacing:.08em; }
 .guide-method-link h2 { margin:0; color:var(--green); font-family:Georgia,"Yu Mincho",serif; font-size:clamp(20px,2vw,23px); font-weight:400; letter-spacing:-.03em; }
-.guide-detail-content h2 { margin:0; color:var(--green); font-family:Georgia,"Yu Mincho",serif; font-size:clamp(28px,3vw,38px); font-weight:400; letter-spacing:-.03em; }
+.guide-detail-content h2 { margin:0; color:var(--green); font-family:Georgia,"Yu Mincho",serif; font-size:clamp(24px,2.4vw,32px); font-weight:400; line-height:1.35; letter-spacing:-.03em; }
 .guide-detail-content h3 { margin:32px 0 0; color:#42564c; font-size:12px; letter-spacing:.08em; }
 .guide-detail-content h3::before { display:inline-block; width:5px; height:5px; margin:0 8px 2px 0; border-radius:50%; background:var(--ink); content:''; }
 .guide-method-description { margin:6px 0 0; color:var(--muted); font-size:11px; line-height:1.7; }
@@ -400,7 +400,7 @@ footer { background:#132c23; color:white; display:grid; grid-template-columns:1.
   .guide-method-link { grid-template-columns:1fr; gap:12px; margin-top:10px; padding:16px 18px; }
   .guide-method-link:hover { transform:none; }
   .guide-method-link h2 { font-size:21px; }
-  .guide-detail-content h2 { font-size:29px; }
+  .guide-detail-content h2 { font-size:26px; line-height:1.4; }
   .guide-detail-content > p:not(.eyebrow) { font-size:13px; }
   .shading-diagram { margin:24px 0 30px; padding:17px 14px; }
   .shading-methods { margin-top:34px; }
